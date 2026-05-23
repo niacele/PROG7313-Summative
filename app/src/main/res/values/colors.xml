@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="buddydarkblue">#49688D</color>
+    <color name="buddylightblue">#A6C0C2</color>
+    <color name="buddypink">#ECA8A7</color>
 </resources>
