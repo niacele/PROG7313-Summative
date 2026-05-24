@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1018770889895",
+    "project_id": "mybudgetbuddysum",
+    "storage_bucket": "mybudgetbuddysum.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018770889895:android:fa3194b82d935d52394f82",
+        "android_client_info": {
+          "package_name": "com.example.mybudgetbuddysummative"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVVHFFzknhXWRSnehImUtFC-Ljf_qXynA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
