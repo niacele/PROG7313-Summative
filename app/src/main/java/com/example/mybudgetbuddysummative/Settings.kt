@@ -1,59 +1,86 @@
 package com.example.mybudgetbuddysummative
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [Settings.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Settings : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var btnBackButton: ImageButton
+    private lateinit var btnAccountInfo: Button
+    private lateinit var btnCurrency: Button
+    private lateinit var btnAchievements: Button
+    private lateinit var btnLogout: Button
+    private lateinit var btnManageSubscription: Button
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Settings.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Settings().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        // Typecasting
+        btnBackButton = view.findViewById(R.id.btnBackButton)
+        btnAccountInfo = view.findViewById(R.id.btnAccountInfo)
+        btnCurrency = view.findViewById(R.id.btnCurrency)
+        btnAchievements = view.findViewById(R.id.btnAchievements)
+        btnLogout = view.findViewById(R.id.btnLogout)
+        btnManageSubscription = view.findViewById(R.id.btnManageSubscription)
+
+        // Back button → return to Home
+        btnBackButton.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, Home())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Account Info
+        btnAccountInfo.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, AccountInfo())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Currency
+        btnCurrency.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, Currency())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Achievements
+        btnAchievements.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, Achievements())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Manage Subscription
+        btnManageSubscription.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, Subscription())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Logout
+        btnLogout.setOnClickListener {
+            Toast.makeText(requireContext(), "Logging out...", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, GetStarted())
+                .commit()
+        }
+
+        return view
     }
 }
