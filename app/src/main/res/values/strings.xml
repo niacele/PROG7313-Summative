@@ -71,4 +71,11 @@
     <string name="enter_category">Enter Category</string>
     <string name="description">Description</string>
     <string name="enter_email">Enter email</string>
+    <string name="new_envelope">New Envelope</string>
+    <string name="envelope_name">Envelope Name</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="recurring">Recurring:</string>
+    <string name="envelope_colour">Envelope Colour:</string>
+    <string name="select_a_category">Select a category</string>
 </resources>
