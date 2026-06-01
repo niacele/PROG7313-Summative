@@ -1,14 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".Income">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <include
+        android:id="@+id/navigationLayout"
+        layout="@layout/layout_navigation" />
 
-</FrameLayout>
+        <ImageButton
+        android:id="@+id/btnBackButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="72dp"
+        android:background="@null"
+        android:contentDescription="@string/back_button"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/back_icon_removebg_preview" />
+
+
+    <TextView
+        android:id="@+id/txtBackLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="@color/buddydarkblue"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBackButton"
+        app:layout_constraintStart_toEndOf="@+id/btnBackButton"
+        app:layout_constraintTop_toTopOf="@+id/btnBackButton" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="120dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBackButton">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="16dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardNewIncomeContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/buddydarkblue"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/txtNewIncomeHeading"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="New Income"
+                        android:textColor="#C57B7B"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="16dp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilIncomeAmount"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Amount"
+                        app:boxCornerRadius="16dp"
+                        app:boxStrokeColor="@color/buddydarkblue"
+                        app:prefixText="R "
+                        app:prefixTextColor="@color/buddydarkblue">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtIncomeAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:gravity="center"
+                            android:inputType="numberDecimal" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilIncomeSource"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="Source"
+                        app:boxCornerRadius="16dp"
+                        app:boxStrokeColor="@color/buddydarkblue">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtIncomeSource"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:gravity="center"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilIncomeDate"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="Date"
+                        app:boxCornerRadius="16dp"
+                        app:boxStrokeColor="@color/buddydarkblue"
+                        app:endIconMode="custom"
+                        app:endIconTint="@color/buddydarkblue">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtIncomeDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:gravity="center"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSaveIncome"
+                        android:layout_width="160dp"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_gravity="center"
+                        android:backgroundTint="@color/buddylightblue"
+                        android:text="SAVE"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="22dp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAllocationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/buddydarkblue"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/txtAllocateHeading"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Allocate Amount"
+                        android:textColor="#C57B7B"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="16dp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilAllocationAmount"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Amount"
+                        app:boxCornerRadius="16dp"
+                        app:boxStrokeColor="@color/buddydarkblue"
+                        app:prefixText="R "
+                        app:prefixTextColor="@color/buddydarkblue">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtAllocationAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:gravity="center"
+                            android:inputType="numberDecimal" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilAllocationEnvelope"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:hint="Envelope"
+                        app:boxCornerRadius="16dp"
+                        app:boxStrokeColor="@color/buddydarkblue">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/edtAllocationEnvelopeDropdown"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:gravity="center"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSaveAllocation"
+                        android:layout_width="160dp"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_gravity="center"
+                        android:backgroundTint="@color/buddylightblue"
+                        android:text="SAVE"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="22dp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

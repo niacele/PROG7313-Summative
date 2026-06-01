@@ -1,14 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".TotalSpending">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <include
+        android:id="@+id/navigationLayout"
+        layout="@layout/layout_navigation" />
 
-</FrameLayout>
+    <ImageButton
+        android:id="@+id/btnBackButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="100dp"
+        android:background="@null"
+        android:contentDescription="@string/back_button"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/back_icon_removebg_preview" />
+
+    <TextView
+        android:id="@+id/txtBackLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="@color/buddydarkblue"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBackButton"
+        app:layout_constraintStart_toEndOf="@+id/btnBackButton"
+        app:layout_constraintTop_toTopOf="@+id/btnBackButton" />
+
+    <ImageButton
+        android:id="@+id/btnSpendingFilter"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="24dp"
+        android:background="@null"
+        android:contentDescription="Filter Records"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/filter_icon_removebg_preview" />
+
+       <LinearLayout
+        android:id="@+id/headerTextContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBackButton">
+
+        <TextView
+            android:id="@+id/txtTotalSpendingHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Spending"
+            android:textColor="#C57B7B"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtSpendingSubheading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Month"
+            android:textColor="#C57B7B"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="72dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerTextContainer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="16dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTotalSpendingList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:scrollbars="vertical"
+                tools:listitem="@layout/item_total_spending_row" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddNewExpense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@android:color/transparent"
+                android:text="Add New Expense"
+                android:textColor="@color/buddydarkblue"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:strokeColor="@color/buddydarkblue"
+                app:strokeWidth="1dp"
+                app:cornerRadius="16dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

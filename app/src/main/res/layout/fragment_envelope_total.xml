@@ -10,12 +10,13 @@
         android:id="@+id/navigationLayout"
         layout="@layout/layout_navigation" />
 
+    <!-- BACK BUTTON - MOVED FURTHER DOWN -->
     <ImageButton
         android:id="@+id/btnBackButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="96dp"
         android:background="@null"
         android:contentDescription="@string/back_button"
         android:scaleType="fitCenter"
@@ -23,11 +24,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/back_icon_removebg_preview" />
 
+    <!-- FILTER BUTTON - MOVED FURTHER DOWN -->
     <ImageButton
         android:id="@+id/btnEnvelopeSettings"
         android:layout_width="31dp"
         android:layout_height="31dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="16dp"
         android:background="@null"
         android:contentDescription="Envelope Settings"
@@ -36,6 +38,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/filter_icon_removebg_preview" />
 
+    <!-- ENVELOPE TITLE - MOVED FURTHER DOWN -->
     <TextView
         android:id="@+id/txtEnvelopeTitle"
         android:layout_width="wrap_content"
@@ -49,13 +52,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnEnvelopeSettings" />
 
+    <!-- PROGRESS BAR - ADJUSTED MARGIN -->
     <ProgressBar
         android:id="@+id/progressBudget"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:max="100"
         android:progress="0"
@@ -65,6 +69,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtEnvelopeTitle" />
 
+    <!-- CURRENT SPENT TEXT -->
     <TextView
         android:id="@+id/txtCurrentSpent"
         android:layout_width="wrap_content"
@@ -77,6 +82,7 @@
         app:layout_constraintStart_toStartOf="@+id/progressBudget"
         app:layout_constraintTop_toBottomOf="@+id/progressBudget" />
 
+    <!-- TOTAL BUDGET LIMIT TEXT -->
     <TextView
         android:id="@+id/txtTotalBudgetLimit"
         android:layout_width="wrap_content"
@@ -89,10 +95,11 @@
         app:layout_constraintEnd_toEndOf="@+id/progressBudget"
         app:layout_constraintTop_toBottomOf="@+id/progressBudget" />
 
+    <!-- SCROLLVIEW - ADJUSTED TOP MARGIN -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="56dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -106,6 +113,7 @@
             android:paddingEnd="24dp"
             android:paddingBottom="16dp">
 
+            <!-- EXPENSES LOG CARD -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
@@ -140,6 +148,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- ALLOCATIONS LOG CARD -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="160dp"

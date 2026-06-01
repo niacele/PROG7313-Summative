@@ -182,7 +182,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="8dp"
             android:backgroundTint="@color/buddylightblue"
-            android:text="@string/save"
+            android:text="SAVE"
             android:textColor="#5D4037"
             android:textSize="14sp"
             app:cornerRadius="22dp"

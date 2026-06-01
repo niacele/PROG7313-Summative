@@ -1,14 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  The currency interface utilizes the same stacked form styling to allow premium users
+  to toggle their app-wide transaction symbol.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".Currency">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <include
+        android:id="@+id/navigationLayout"
+        layout="@layout/layout_navigation" />
 
-</FrameLayout>
+    <ImageButton
+        android:id="@+id/btnBackButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        android:contentDescription="@string/back_button"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/back_icon_removebg_preview" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/buddydarkblue"
+        app:strokeWidth="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/txtCurrencyHeading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Currency"
+                android:textColor="#C57B7B"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txtCurrencySubtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Choose your primary app currency layer.\n*Premium required to unlock exchange shifting."
+                android:textColor="#78909C"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtCurrencyHeading" />
+
+            <RadioGroup
+                android:id="@+id/rgCurrencySelector"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtCurrencySubtitle">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbCurrencyZar"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginBottom="12dp"
+                    android:buttonTint="@color/buddydarkblue"
+                    android:checked="true"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="South African Rand (R)"
+                    android:textColor="@color/buddydarkblue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbCurrencyUsd"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginBottom="12dp"
+                    android:buttonTint="@color/buddydarkblue"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="US Dollar ($)"
+                    android:textColor="@color/buddydarkblue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rbCurrencyGbp"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:buttonTint="@color/buddydarkblue"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="British Pound (£)"
+                    android:textColor="@color/buddydarkblue"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </RadioGroup>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveCurrency"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/buddylightblue"
+                android:text="APPLY CHANGES"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rgCurrencySelector" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
