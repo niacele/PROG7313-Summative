@@ -16,5 +16,4 @@
         android:id="@+id/nav_envelope"
         android:icon="@drawable/envelope_icon"
         android:title="Envelope"/>
-
 </menu>

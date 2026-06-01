@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".AccountInfo">
+    tools:context=".AccountInfo"
+    android:background="@android:color/white">
 
     <include layout="@layout/background_blob" />
 
@@ -22,22 +23,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.115"
         app:srcCompat="@drawable/back_icon_removebg_preview"
-        tools:ignore="TouchTargetSizeCheck,RedundantDescriptionCheck,SpeakableTextPresentCheck" />
+        tools:ignore="TouchTargetSizeCheck,RedundantDescriptionCheck" />
 
     <TextView
         android:id="@+id/txtAccountInfo"
-        android:layout_width="260dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/account_info"
+        android:text="Account Settings"
+        android:textColor="@color/buddydarkblue"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.116" />
+        app:layout_constraintBottom_toBottomOf="@+id/btnBackButton"
+        app:layout_constraintStart_toEndOf="@+id/btnBackButton"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="@+id/btnBackButton" />
 
     <TextView
         android:id="@+id/txtUserInfoLabel"
@@ -46,59 +45,95 @@
         android:text="@string/user_information"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="#C57B7B"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtAccountInfo"
-        app:layout_constraintVertical_bias="0.09" />
+        android:layout_marginTop="64dp" />
 
     <TextView
         android:id="@+id/txtNameLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="@string/name"
+        android:textColor="@color/buddydarkblue"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/txtUserName"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtUserInfoLabel"
-        app:layout_constraintVertical_bias="0.043" />
+        app:layout_constraintTop_toBottomOf="@+id/txtUserInfoLabel" />
 
     <TextView
         android:id="@+id/txtUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:text="@string/name_will_appear_here"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtNameLabel"
-        app:layout_constraintTop_toTopOf="@+id/txtNameLabel"
-        app:layout_constraintVertical_bias="0.0" />
+        android:textColor="#546E7A"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtNameLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtNameLabel" />
 
     <TextView
         android:id="@+id/txtEmailLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="@string/email"
+        android:textColor="@color/buddydarkblue"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/txtUserEmail"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtNameLabel"
-        app:layout_constraintVertical_bias="0.048" />
+        app:layout_constraintTop_toBottomOf="@+id/txtNameLabel" />
 
     <TextView
         android:id="@+id/txtUserEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:text="@string/email_will_appear_here"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtEmailLabel"
-        app:layout_constraintTop_toTopOf="@+id/txtEmailLabel"
-        app:layout_constraintVertical_bias="0.0" />
+        android:textColor="#546E7A"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtEmailLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtEmailLabel" />
+
+    <Button
+        android:id="@+id/btnEditUser"
+        android:layout_width="180dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="@color/buddylightblue"
+        android:text="EDIT USER"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:padding="0dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtUserEmail" />
+
+    <Button
+        android:id="@+id/btnChangePassword"
+        android:layout_width="180dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/buddylightblue"
+        android:text="CHANGE PASSWORD"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:padding="0dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnEditUser" />
 
     <TextView
         android:id="@+id/txtAccountInfoLabel"
@@ -107,67 +142,104 @@
         android:text="@string/account_information"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="#C57B7B"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtUserInfoLabel"
-        app:layout_constraintVertical_bias="0.346"
-        tools:ignore="VisualLintOverlap" />
+        app:layout_constraintTop_toBottomOf="@+id/btnChangePassword"
+        android:layout_marginTop="48dp" />
 
     <TextView
         android:id="@+id/txtJoinDateLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="@string/join_date"
+        android:textColor="@color/buddydarkblue"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/txtDate"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtAccountInfoLabel"
-        app:layout_constraintVertical_bias="0.069"
-        tools:ignore="VisualLintOverlap" />
+        app:layout_constraintTop_toBottomOf="@+id/txtAccountInfoLabel" />
 
     <TextView
         android:id="@+id/txtDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:text="@string/date_will_appear_here"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtJoinDateLabel"
-        app:layout_constraintTop_toTopOf="@+id/txtJoinDateLabel"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="VisualLintOverlap" />
+        android:textColor="#546E7A"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtJoinDateLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtJoinDateLabel" />
 
     <TextView
         android:id="@+id/txtAchievementsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="@string/achievements"
+        android:textColor="@color/buddydarkblue"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.35"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/txtAchievements"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtJoinDateLabel"
-        app:layout_constraintVertical_bias="0.08"
-        tools:ignore="VisualLintOverlap" />
+        app:layout_constraintTop_toBottomOf="@+id/txtJoinDateLabel" />
 
     <TextView
         android:id="@+id/txtAchievements"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:text="@string/coming_soon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtAchievementsLabel"
-        app:layout_constraintTop_toTopOf="@+id/txtAchievementsLabel"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="VisualLintOverlap" />
+        android:textColor="#546E7A"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtAchievementsLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtAchievementsLabel" />
 
+    <TextView
+        android:id="@+id/txtSubscribedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Subscribed: "
+        android:textColor="@color/buddydarkblue"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/txtSubscribed"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtAchievementsLabel" />
 
+    <TextView
+        android:id="@+id/txtSubscribed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="No"
+        android:textColor="#546E7A"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtSubscribedLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtSubscribedLabel" />
 
-
+    <Button
+        android:id="@+id/btnClearData"
+        android:layout_width="180dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/buddylightblue"
+        android:text="CLEAR DATA"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:padding="0dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSubscribedLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

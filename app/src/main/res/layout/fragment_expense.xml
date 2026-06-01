@@ -87,12 +87,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilCategory"
+                android:id="@+id/tilEnvelope"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Category"
+                android:hint="Envelope"
                 app:boxCornerRadius="16dp"
                 app:boxStrokeColor="@color/buddydarkblue"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -102,9 +102,10 @@
                 <AutoCompleteTextView
                     android:id="@+id/edtCategory"
                     android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    android:layout_height="48dp"
                     android:gravity="center"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -118,7 +119,7 @@
                 app:boxStrokeColor="@color/buddydarkblue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tilCategory">
+                app:layout_constraintTop_toBottomOf="@+id/tilEnvelope">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtDate"

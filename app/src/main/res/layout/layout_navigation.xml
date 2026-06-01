@@ -35,9 +35,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/buddydarkblue"
-        app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:menu="@menu/bottom_nav_menu"
+        app:itemActiveIndicatorStyle="@null"
+        app:itemIconTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

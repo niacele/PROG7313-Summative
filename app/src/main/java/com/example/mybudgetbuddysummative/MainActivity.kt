@@ -18,6 +18,9 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav = findViewById(R.id.bottom_navigation)
 
+        //removes grey tinting from icons!!
+        bottomNav.itemIconTintList = null
+
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, GetStarted())
