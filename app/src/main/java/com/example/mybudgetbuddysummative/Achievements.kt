@@ -1,59 +1,77 @@
 package com.example.mybudgetbuddysummative
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import android.widget.ImageView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [Achievements.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Achievements : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var imgFirstBudget: ImageView
+    private lateinit var imgFirstCategory: ImageView
+    private lateinit var imgBudgeting101: ImageView
+    private lateinit var imgBudgetBuddies: ImageView
+    private lateinit var imgSavingStreak: ImageView
+    private lateinit var imgExpenseTracker: ImageView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val auth = FirebaseAuth.getInstance()
+    private val dbRef = FirebaseDatabase.getInstance().getReference("achievements")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_achievements, container, false)
+        val view = inflater.inflate(R.layout.fragment_achievements, container, false)
+
+        imgFirstBudget = view.findViewById(R.id.imgFirstBudget)
+        imgFirstCategory = view.findViewById(R.id.imgFirstCategory)
+        imgBudgeting101 = view.findViewById(R.id.imgBudgeting101)
+        imgBudgetBuddies = view.findViewById(R.id.imgBudgetBuddies)
+        imgSavingStreak = view.findViewById(R.id.imgSavingStreak)
+        imgExpenseTracker = view.findViewById(R.id.imgExpenseTracker)
+
+        loadAchievements()
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Achievements.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Achievements().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun loadAchievements() {
+        val userId = auth.currentUser?.uid ?: return
+        dbRef.child(userId).get().addOnSuccessListener { snapshot ->
+            val achievements = snapshot.value as? Map<String, Boolean> ?: return@addOnSuccessListener
+
+            val pink = ContextCompat.getColor(requireContext(), R.color.buddypink)
+            val tintList = ColorStateList.valueOf(pink)
+
+            if (achievements["firstBudget"] == true) {
+                imgFirstBudget.setImageTintList(tintList)
             }
+            if (achievements["firstCategory"] == true) {
+                imgFirstCategory.setImageTintList(tintList)
+            }
+            if (achievements["budgeting101"] == true) {
+                imgBudgeting101.setImageTintList(tintList)
+            }
+            if (achievements["budgetBuddies"] == true) {
+                imgBudgetBuddies.setImageTintList(tintList)
+            }
+            if (achievements["savingStreak"] == true) {
+                imgSavingStreak.setImageTintList(tintList)
+            }
+            if (achievements["expenseTracker"] == true) {
+                imgExpenseTracker.setImageTintList(tintList)
+            }
+        }
+    }
+
+    fun unlockAchievement(key: String) {
+        val userId = auth.currentUser?.uid ?: return
+        dbRef.child(userId).child(key).setValue(true)
     }
 }

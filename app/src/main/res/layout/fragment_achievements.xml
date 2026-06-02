@@ -22,7 +22,8 @@
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back_icon_removebg_preview" />
+        app:srcCompat="@drawable/back_icon_removebg_preview"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
         android:id="@+id/txtAchievementsHeading"
@@ -73,7 +74,7 @@
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:src="@drawable/achievements_icon_badge"
-                        android:tint="#CCCCCC" />
+                        app:tint="#CCCCCC" />
 
                     <TextView
                         android:id="@+id/txtFirstBudgetTitle"
@@ -109,7 +110,7 @@
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:src="@drawable/achievements_icon_badge"
-                        android:tint="#CCCCCC" />
+                        app:tint="#CCCCCC" />
 
                     <TextView
                         android:id="@+id/txtFirstCategoryTitle"
@@ -154,7 +155,7 @@
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:src="@drawable/achievements_icon_badge"
-                        android:tint="#CCCCCC" />
+                        app:tint="#CCCCCC" />
 
                     <TextView
                         android:id="@+id/txtBudgeting101Title"
@@ -190,7 +191,7 @@
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:src="@drawable/achievements_icon_badge"
-                        android:tint="#CCCCCC" />
+                        app:tint="#CCCCCC" />
 
                     <TextView
                         android:id="@+id/txtBudgetBuddiesTitle"
@@ -235,7 +236,7 @@
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:src="@drawable/achievements_icon_badge"
-                        android:tint="#CCCCCC" />
+                        app:tint="#CCCCCC" />
 
                     <TextView
                         android:id="@+id/txtSavingStreakTitle"
@@ -271,7 +272,7 @@
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:src="@drawable/achievements_icon_badge"
-                        android:tint="#CCCCCC" />
+                        app:tint="#CCCCCC" />
 
                     <TextView
                         android:id="@+id/txtExpenseTrackerTitle"

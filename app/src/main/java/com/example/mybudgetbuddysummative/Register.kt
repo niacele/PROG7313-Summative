@@ -81,7 +81,7 @@ class Register : Fragment() {
                 if (task.isSuccessful) {
                     Toast.makeText(requireContext(), "User registered successfully", Toast.LENGTH_SHORT).show()
                     clearFields()
-                    // After registration, go back to Login
+                    //go to log in
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, Login())
                         .commit()

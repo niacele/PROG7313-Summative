@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class Login : Fragment() {
 
+    //global declarations
     private lateinit var edtEmail: EditText
     private lateinit var edtPassword: EditText
     private lateinit var btnLogin: Button
@@ -27,7 +28,7 @@ class Login : Fragment() {
         // Inflate the correct layout file (make sure it's named fragment_login.xml)
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
-        // Bind views
+        //typecasting
         edtEmail = view.findViewById(R.id.edtEmail)
         edtPassword = view.findViewById(R.id.edtPassword)
         btnLogin = view.findViewById(R.id.btnLogin)

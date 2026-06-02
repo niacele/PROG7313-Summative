@@ -5,55 +5,119 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.RadioGroup
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [Envelope.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Envelope : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var edtEnvelopeName: EditText
+    private lateinit var edtAmount: EditText
+    private lateinit var rgRecurring: RadioGroup
+    private lateinit var btnSave: Button
+    private lateinit var btnBack: ImageButton
+    private lateinit var colorPaletteContainer: LinearLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+
+    private val dbRef = FirebaseDatabase.getInstance().getReference("envelopes")
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+    private var selectedColor: String = "#4A6984"
+    private var isRecurring: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_envelope, container, false)
+        val view = inflater.inflate(R.layout.fragment_envelope, container, false)
+
+        //typecasting
+        edtEnvelopeName = view.findViewById(R.id.edtEnvelopeName)
+        edtAmount = view.findViewById(R.id.edtAmount)
+        rgRecurring = view.findViewById(R.id.rgRecurring)
+        btnSave = view.findViewById(R.id.btnSave)
+        colorPaletteContainer = view.findViewById(R.id.colorPaletteContainer)
+
+        // reoccuring
+        rgRecurring.setOnCheckedChangeListener { _, checkedId ->
+            isRecurring = checkedId == R.id.rbYes
+        }
+
+        //colours
+        for (i in 0 until colorPaletteContainer.childCount) {
+            val child = colorPaletteContainer.getChildAt(i)
+            if (child is CheckBox) {
+                child.setOnCheckedChangeListener { buttonView, isChecked ->
+                    if (isChecked) {
+                        // Uncheck others
+                        for (j in 0 until colorPaletteContainer.childCount) {
+                            val other = colorPaletteContainer.getChildAt(j)
+                            if (other is CheckBox && other != buttonView) {
+                                other.isChecked = false
+                            }
+                        }
+                        // Save selected color
+                        val bg = child.background
+                        if (bg != null) {
+                            // fallback: use hardcoded hex from XML
+                            selectedColor = (child.background as? android.graphics.drawable.ColorDrawable)?.color?.let {
+                                String.format("#%06X", 0xFFFFFF and it)
+                            } ?: "#4A6984"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Save button
+        btnSave.setOnClickListener {
+            saveEnvelope()
+        }
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Envelope.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Envelope().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun saveEnvelope() {
+        val name = edtEnvelopeName.text.toString().trim()
+        val amountText = edtAmount.text.toString().trim()
+        val amount = amountText.toDoubleOrNull()
+
+        if (name.isEmpty() || amount == null) {
+            Toast.makeText(requireContext(), "Please enter valid name and amount", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val dbRef = FirebaseDatabase.getInstance().getReference("envelopes")
+        val envelopeId = dbRef.push().key!!
+
+        //envelope
+        val envelopeMap = mapOf(
+            "id" to envelopeId,
+            "userId" to userId,
+            "name" to name,
+            "totalAmount" to amount,
+            "recurring" to isRecurring,
+            "colorHex" to selectedColor
+        )
+
+        dbRef.child(userId).child(envelopeId).setValue(envelopeMap)
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Envelope saved", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Error: ${it.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }
