@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/navigationLayout"
-        layout="@layout/layout_navigation" />
+        layout="@layout/activity_main" />
 
     <!-- BACK BUTTON - MOVED FURTHER DOWN -->
     <ImageButton

@@ -20,6 +20,7 @@ class Report : Fragment() {
     private lateinit var btnViewReport: Button
     private lateinit var resultsContainer: LinearLayout
     private lateinit var txtTotal: TextView
+    private lateinit var btnBackButton: ImageButton
 
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
@@ -37,6 +38,7 @@ class Report : Fragment() {
         btnViewReport = view.findViewById(R.id.btnViewReport)
         resultsContainer = view.findViewById(R.id.resultsContainer)
         txtTotal = view.findViewById(R.id.txtTotal)
+        btnBackButton = view.findViewById(R.id.btnBackButton)
 
         // Load envelopes into dropdown
         loadEnvelopes()
@@ -47,6 +49,11 @@ class Report : Fragment() {
 
         // View report
         btnViewReport.setOnClickListener { viewReport() }
+
+        // Back button
+        btnBackButton.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
 
         return view
     }

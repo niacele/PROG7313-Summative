@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class TotalSpendingFragment : Fragment() {
+class TotalSpending: Fragment() {
 
     private lateinit var rvTotalSpendingList: RecyclerView
     private val auth = FirebaseAuth.getInstance()

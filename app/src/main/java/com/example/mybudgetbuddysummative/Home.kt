@@ -71,11 +71,11 @@ class Home : Fragment() {
     }
     // Map envelope/category names to color resources
     private val envelopeColour: Map<String, Int> = mapOf(
-        "Groceries" to Color.parseColor("#C57B7B"),   // green
-        "Transport" to Color.parseColor("#404040"),   // red
-        "Entertainment" to Color.parseColor("#FFAAAA"), // light blue
-        "Bills" to Color.parseColor("#93A9A7"),       // dark blue
-        "Other" to Color.parseColor("white")        // gray
+        "Groceries" to Color.parseColor("#C57B7B"),
+        "Transport" to Color.parseColor("#404040"),
+        "Entertainment" to Color.parseColor("#FFAAAA"),
+        "Bills" to Color.parseColor("#93A9A7"),
+        "Other" to Color.parseColor("white")
     )
 
     private fun showExpensesForRange(range: String) {

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.button.MaterialButton
@@ -33,7 +34,6 @@ class SubscriptionTwo : Fragment() {
         cardFreePlan = view.findViewById(R.id.cardFreePlan)
         btnContinueUpgrade = view.findViewById(R.id.btnContinueUpgrade)
 
-        // Handle selection
         cardMonthlyPlan.setOnClickListener { selectPlan("monthly") }
         cardAnnualPlan.setOnClickListener { selectPlan("annual") }
         cardFreePlan.setOnClickListener { selectPlan("free") }
@@ -46,7 +46,7 @@ class SubscriptionTwo : Fragment() {
     private fun selectPlan(plan: String) {
         selectedPlan = plan
 
-        // Visual feedback: highlight selected card
+        // highlight selected card
         cardMonthlyPlan.strokeWidth = if (plan == "monthly") 4 else 0
         cardAnnualPlan.strokeWidth = if (plan == "annual") 4 else 0
         cardFreePlan.strokeWidth = if (plan == "free") 4 else 0
@@ -56,7 +56,6 @@ class SubscriptionTwo : Fragment() {
         val userId = auth.currentUser?.uid ?: return
         val ref = db.getReference("users").child(userId).child("subscription")
 
-        // Free mode is not a subscription
         val value = when (selectedPlan) {
             "monthly" -> "premium_monthly"
             "annual" -> "premium_annual"
@@ -64,13 +63,17 @@ class SubscriptionTwo : Fragment() {
             else -> null
         }
 
-        if (value != null) {
-            ref.setValue(value).addOnSuccessListener {
-                // Navigate to Home/Dashboard
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, Home())
-                    .commit()
-            }
+        if (value == null) {
+            Toast.makeText(requireContext(), "Please select a plan first", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        ref.setValue(value).addOnSuccessListener {
+            // Navigate to Home after saving
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, Home())
+                .commit()
         }
     }
 }
+

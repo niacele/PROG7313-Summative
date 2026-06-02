@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/navigationLayout"
-        layout="@layout/layout_navigation" />
+        layout="@layout/activity_main" />
 
 
     <ImageButton

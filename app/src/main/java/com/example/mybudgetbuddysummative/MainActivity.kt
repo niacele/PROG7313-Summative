@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.mybudgetbuddysummative.Envelope
-import com.example.mybudgetbuddysummative.R
-import com.example.mybudgetbuddysummative.Settings
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -14,52 +11,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.layout_navigation)
+        setContentView(R.layout.activity_main)
 
         bottomNav = findViewById(R.id.bottom_navigation)
-
-        //removes grey tinting from icons!!
         bottomNav.itemIconTintList = null
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, GetStarted())
                 .commit()
-
-            bottomNav.visibility = View.GONE
+            bottomNav.visibility = View.GONE // hide nav bar initially
         }
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> {
-                    showFragment(Home())
-                    true
-                }
-                R.id.nav_expense -> {
-                    showFragment(Expense())
-                    true
-                }
-                R.id.nav_envelope -> {
-                    showFragment(Envelope())
-                    true
-                }
-                R.id.nav_settings -> {
-                    showFragment(Settings())
-                    true
-                }
+                R.id.nav_home -> { showFragment(Home()); true }
+                R.id.nav_expense -> { showFragment(Expense()); true }
+                R.id.nav_envelope -> { showFragment(Envelope()); true }
+                R.id.nav_settings -> { showFragment(Settings()); true }
                 else -> false
             }
         }
+    }
 
-        // Listen for fragment changes to hide/show nav bar automatically
-        supportFragmentManager.addOnBackStackChangedListener {
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-            if (currentFragment is GetStarted || currentFragment is Login || currentFragment is Register) {
-                bottomNav.visibility = View.GONE
-            } else {
-                bottomNav.visibility = View.VISIBLE
-            }
-        }
+    fun enableBottomNav() {
+        bottomNav.visibility = View.VISIBLE
+        showFragment(Home())
     }
 
     private fun showFragment(fragment: Fragment) {

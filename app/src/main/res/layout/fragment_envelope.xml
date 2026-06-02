@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/navigation"
-        layout="@layout/layout_navigation"
+        layout="@layout/activity_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
