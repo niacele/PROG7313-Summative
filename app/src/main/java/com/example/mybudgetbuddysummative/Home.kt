@@ -1,7 +1,7 @@
 package com.example.mybudgetbuddysummative
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +9,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -68,8 +65,18 @@ class Home : Fragment() {
                 .commit()
         }
 
+
+
         return view
     }
+    // Map envelope/category names to color resources
+    private val envelopeColour: Map<String, Int> = mapOf(
+        "Groceries" to Color.parseColor("#C57B7B"),   // green
+        "Transport" to Color.parseColor("#404040"),   // red
+        "Entertainment" to Color.parseColor("#FFAAAA"), // light blue
+        "Bills" to Color.parseColor("#93A9A7"),       // dark blue
+        "Other" to Color.parseColor("white")        // gray
+    )
 
     private fun showExpensesForRange(range: String) {
         val calendar = Calendar.getInstance()
@@ -131,17 +138,16 @@ class Home : Fragment() {
         val colors = mutableListOf<Int>()
         for (entry in entries) {
             val envelope = entry.label
-            //val colorRes = envelopeColour[envelope] ?: R.color.white // fallback
-            //colors.add(resources.getColor(colorRes, null))
+            val colorInt = envelopeColour[envelope] ?: Color.parseColor("#FFFFFF") // fallback white
+            colors.add(colorInt)
         }
 
         dataSet.colors = colors
         dataSet.valueTextSize = 14f
-        dataSet.valueTextColor = resources.getColor(R.color.black, null)
+        dataSet.valueTextColor = Color.BLACK
 
         val data = PieData(dataSet)
         mainBudgetPieChart.data = data
         mainBudgetPieChart.invalidate()
     }
-
 }

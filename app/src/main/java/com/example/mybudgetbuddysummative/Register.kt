@@ -83,7 +83,7 @@ class Register : Fragment() {
                     clearFields()
                     //go to log in
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, Login())
+                        .replace(R.id.fragment_container, Subscription())
                         .commit()
                 } else {
                     Toast.makeText(requireContext(), "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
