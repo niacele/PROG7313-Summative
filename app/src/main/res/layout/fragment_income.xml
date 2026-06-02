@@ -112,7 +112,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="Source"
-                        app:boxCornerRadius="16dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
                         app:boxStrokeColor="@color/buddydarkblue">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -130,7 +133,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="Date"
-                        app:boxCornerRadius="16dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
                         app:boxStrokeColor="@color/buddydarkblue"
                         app:endIconMode="custom"
                         app:endIconTint="@color/buddydarkblue">
@@ -196,7 +202,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Amount"
-                        app:boxCornerRadius="16dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
                         app:boxStrokeColor="@color/buddydarkblue"
                         app:prefixText="R "
                         app:prefixTextColor="@color/buddydarkblue">
@@ -216,7 +225,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="Envelope"
-                        app:boxCornerRadius="16dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
                         app:boxStrokeColor="@color/buddydarkblue">
 
                         <AutoCompleteTextView

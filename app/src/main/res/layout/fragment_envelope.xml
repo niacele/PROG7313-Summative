@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- NAVIGATION -->
     <include
         android:id="@+id/navigation"
         layout="@layout/layout_navigation"
@@ -108,7 +107,7 @@
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- CATEGORY DROPDOWN REMOVED -->
+
 
         <TextView
             android:id="@+id/lblRecurring"

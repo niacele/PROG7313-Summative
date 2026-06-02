@@ -11,7 +11,6 @@
         android:id="@+id/navigationLayout"
         layout="@layout/layout_navigation" />
 
-
     <ImageButton
         android:id="@+id/btnBackButton"
         android:layout_width="48dp"
@@ -45,7 +44,6 @@
             android:layout_height="wrap_content"
             android:padding="20dp">
 
-
             <TextView
                 android:id="@+id/txtSetMonthlyGoal"
                 android:layout_width="wrap_content"
@@ -58,7 +56,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilGoalAmount"
@@ -86,7 +83,6 @@
                     android:inputType="numberDecimal"
                     android:paddingVertical="0dp" />
             </com.google.android.material.textfield.TextInputLayout>
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilGoalEnvelope"
@@ -120,7 +116,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Target Month / Date"
-                app:boxCornerRadius="16dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp"
                 app:boxStrokeColor="@color/buddydarkblue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -136,7 +135,6 @@
                     android:inputType="none"
                     android:paddingVertical="0dp" />
             </com.google.android.material.textfield.TextInputLayout>
-
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveGoal"
