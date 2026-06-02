@@ -64,7 +64,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="@string/envelope_name"
-            app:boxCornerRadius="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
             app:boxStrokeColor="@color/buddydarkblue"
             app:hintTextColor="@color/buddydarkblue"
             app:layout_constraintTop_toBottomOf="@+id/txtNewEnvelope">
@@ -88,7 +91,10 @@
             android:hint="@string/amount_r"
             app:prefixText="R "
             app:prefixTextColor="@color/buddydarkblue"
-            app:boxCornerRadius="16dp"
+            app:boxCornerRadiusTopStart="16dp"
+            app:boxCornerRadiusTopEnd="16dp"
+            app:boxCornerRadiusBottomStart="16dp"
+            app:boxCornerRadiusBottomEnd="16dp"
             app:boxStrokeColor="@color/buddydarkblue"
             app:layout_constraintTop_toBottomOf="@+id/tilEnvelopeName">
 
