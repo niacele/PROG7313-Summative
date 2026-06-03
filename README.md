@@ -13,6 +13,8 @@ This system has different levels as to what a user can do:
 - Free Mode: a user is limited to 3 custom envelopes. If a user tries to add a 4th envelope, the system has a prompt to let the user know that they
   need to upgrade their subscription.
 - Premium Mode: a user can have unlimited envelopes, and has access to premium features of the application.
+<img width="311" height="658" alt="image" src="https://github.com/user-attachments/assets/6baaeaa5-88a8-4341-85a0-067d22fe37ad" />
+- An image showing the various envelopes
 
 Feature 2: 
 The Achievements 🏆
@@ -23,6 +25,8 @@ The achievements are on a page, specifically showing what was achieved and what 
 the application will update the database with the achievement, and will show the badge on the Achievements page. When a user logs their first expense, 
 the application will update the database with the achievement, and will show the badge on the achievements page.
 The achievements page will show grayed out badges on the Achievements Page, and when an achievement is secured, it will change colour, to full colour.
+<img width="317" height="664" alt="image" src="https://github.com/user-attachments/assets/d33135c9-15b5-4c52-92f6-e1ba8c0bb657" />
+- An image showing the achievements page
 
 
 Team members 👤👤👤:
