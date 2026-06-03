@@ -87,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="@string/amount_r"
+            android:hint="@string/monthly_goal_amount_r"
             app:prefixText="R "
             app:prefixTextColor="@color/buddydarkblue"
             app:boxCornerRadiusTopStart="16dp"

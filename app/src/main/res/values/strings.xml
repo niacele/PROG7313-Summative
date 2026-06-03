@@ -78,4 +78,6 @@
     <string name="recurring">Recurring:</string>
     <string name="envelope_colour">Envelope Colour:</string>
     <string name="select_a_category">Select a category</string>
+    <string name="monthly_goal_amount_r">Monthly Goal Amount (R)</string>
+    <string name="add_income">ADD INCOME</string>
 </resources>
