@@ -71,10 +71,17 @@ class TotalSpending : Fragment() {
                 }
                 .show()
         }
-
-        loadSpendingData()
+        //TEMPORARILY COMMENTED OUT!!!
+        //loadSpendingData()
 
         return view
+    }
+
+    //ADDED THIS FUNCTION TEMPORARILY!!!
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        loadSpendingData()
     }
 
     private fun loadSpendingData() {
