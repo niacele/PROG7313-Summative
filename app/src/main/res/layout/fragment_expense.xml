@@ -7,11 +7,6 @@
     android:background="@android:color/white"
     tools:context=".Expense">
 
-    <include
-        android:id="@+id/navigationLayout"
-        layout="@layout/activity_main" />
-
-
     <ImageButton
         android:id="@+id/btnBackButton"
         android:layout_width="34dp"

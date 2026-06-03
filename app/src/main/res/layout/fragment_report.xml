@@ -8,11 +8,6 @@
     tools:context=".Report">
 
 
-    <include
-        android:id="@+id/navigationLayout"
-        layout="@layout/activity_main" />
-
-
     <ImageButton
         android:id="@+id/btnBackButton"
         android:layout_width="48dp"

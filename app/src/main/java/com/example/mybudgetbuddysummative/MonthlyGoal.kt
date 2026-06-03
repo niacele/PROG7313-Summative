@@ -84,21 +84,41 @@ class MonthlyGoal : Fragment() {
             return
         }
 
-        val goalId = db.getReference("monthlyGoals").push().key!!
-        val goalMap = mapOf(
-            "id" to goalId,
-            "userId" to userId,
-            "envelopeName" to envelopeName,
-            "targetAmount" to amount,
-            "targetMonth" to targetMonth
-        )
+        // ✅ Find envelopeId by name
+        val envelopesRef = db.getReference("envelopes").child(userId)
+        envelopesRef.get().addOnSuccessListener { snapshot ->
+            var envelopeId: String? = null
+            for (envSnap in snapshot.children) {
+                val name = envSnap.child("name").getValue(String::class.java)
+                if (name == envelopeName) {
+                    envelopeId = envSnap.key
+                    break
+                }
+            }
 
-        db.getReference("monthlyGoals").child(userId).child(goalId).setValue(goalMap)
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Monthly goal saved", Toast.LENGTH_SHORT).show()
+            if (envelopeId == null) {
+                Toast.makeText(requireContext(), "Envelope not found", Toast.LENGTH_SHORT).show()
+                return@addOnSuccessListener
             }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Error: ${it.message}", Toast.LENGTH_SHORT).show()
-            }
+
+            val goalId = db.getReference("monthlyGoals").child(userId).child(envelopeId).push().key!!
+            val goalMap = mapOf(
+                "id" to goalId,
+                "userId" to userId,
+                "envelopeId" to envelopeId,
+                "envelopeName" to envelopeName,
+                "targetAmount" to amount,
+                "targetMonth" to targetMonth
+            )
+
+            // ✅ Save under monthlyGoals/{uid}/{envelopeId}/{goalId}
+            db.getReference("monthlyGoals").child(userId).child(envelopeId).child(goalId).setValue(goalMap)
+                .addOnSuccessListener {
+                    Toast.makeText(requireContext(), "Monthly goal saved", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 }

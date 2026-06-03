@@ -12,7 +12,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 class Login : Fragment() {
 
-    //global declarations
     private lateinit var edtEmail: EditText
     private lateinit var edtPassword: EditText
     private lateinit var btnLogin: Button
@@ -25,27 +24,20 @@ class Login : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the correct layout file (make sure it's named fragment_login.xml)
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
-        //typecasting
         edtEmail = view.findViewById(R.id.edtEmail)
         edtPassword = view.findViewById(R.id.edtPassword)
         btnLogin = view.findViewById(R.id.btnLogin)
         btnRegisterPage = view.findViewById(R.id.btnRegisterPage)
 
-        // Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        // Login button
-        btnLogin.setOnClickListener {
-            loginUser()
-        }
+        btnLogin.setOnClickListener { loginUser() }
 
-        // Navigate to Register fragment
         btnRegisterPage.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, Register()) // Register must also be a Fragment
+                .replace(R.id.fragment_container, Register())
                 .addToBackStack(null)
                 .commit()
         }
@@ -65,13 +57,16 @@ class Login : Fragment() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    UserSession.uid = user?.uid
+                    UserSession.email = user?.email
+
                     Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
-                    // Navigate to Home fragment
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, Home())
-                        .commit()
+
+                    (activity as? MainActivity)?.enableBottomNav()
+
                 } else {
-                    Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Login failed. Please check your credentials.", Toast.LENGTH_LONG).show()
                 }
             }
     }

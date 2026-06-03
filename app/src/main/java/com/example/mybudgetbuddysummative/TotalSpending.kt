@@ -35,25 +35,41 @@ class TotalSpending: Fragment() {
         val goalsRef = db.getReference("monthlyGoals").child(userId)
         val expensesRef = db.getReference("expenses").child(userId)
 
-        // Load envelopes and goals first
         envelopesRef.get().addOnSuccessListener { envelopeSnap ->
             val spendingItems = mutableListOf<SpendingItem>()
 
-            for (env in envelopeSnap.children) {
-                val envelopeName = env.child("name").getValue(String::class.java) ?: continue
-                val goalAmount = goalsRef.child(env.key!!).child("targetAmount").get().result?.getValue(Double::class.java) ?: 0.0
+            // Load all goals once
+            goalsRef.get().addOnSuccessListener { goalsSnap ->
+                // Load all expenses once
+                expensesRef.get().addOnSuccessListener { expensesSnap ->
 
-                // Sum expenses for this envelope
-                var totalSpent = 0.0
-                val expenseSnap = expensesRef.child(env.key!!).get().result
-                expenseSnap?.children?.forEach { exp ->
-                    totalSpent += exp.child("amount").getValue(Double::class.java) ?: 0.0
+                    for (env in envelopeSnap.children) {
+                        val envelopeId = env.key ?: continue
+                        val envelopeName = env.child("name").getValue(String::class.java) ?: continue
+
+                        // ✅ Find goal amount for this envelope
+                        var goalAmount = 0.0
+                        val envGoals = goalsSnap.child(envelopeId)
+                        for (goalSnap in envGoals.children) {
+                            val target = goalSnap.child("targetAmount").getValue(Double::class.java)
+                            if (target != null) {
+                                goalAmount = target // you could pick latest or sum if multiple
+                            }
+                        }
+
+                        // ✅ Sum expenses for this envelope
+                        var totalSpent = 0.0
+                        val envExpenses = expensesSnap.child(envelopeId)
+                        for (exp in envExpenses.children) {
+                            totalSpent += exp.child("amount").getValue(Double::class.java) ?: 0.0
+                        }
+
+                        spendingItems.add(SpendingItem(envelopeName, totalSpent, goalAmount))
+                    }
+
+                    rvTotalSpendingList.adapter = TotalSpendingAdapter(spendingItems)
                 }
-
-                spendingItems.add(SpendingItem(envelopeName, totalSpent, goalAmount))
             }
-
-            rvTotalSpendingList.adapter = TotalSpendingAdapter(spendingItems)
         }
     }
 }

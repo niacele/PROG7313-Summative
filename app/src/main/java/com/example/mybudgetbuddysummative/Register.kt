@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class Register : Fragment() {
 
@@ -64,7 +65,6 @@ class Register : Fragment() {
         val password = edtPasswordReg.text.toString().trim()
         val confirmPassword = edtConfirmPasswordReg.text.toString().trim()
 
-        // Validation
         if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
@@ -75,16 +75,41 @@ class Register : Fragment() {
             return
         }
 
-        // Firebase registration
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "User registered successfully", Toast.LENGTH_SHORT).show()
-                    clearFields()
-                    //go to log in
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, Subscription())
-                        .commit()
+                    val user = auth.currentUser
+                    val uid = user?.uid ?: return@addOnCompleteListener
+
+                    //Save profile info in Realtime Database
+                    val userMap = mapOf(
+                        "uid" to uid,
+                        "firstName" to firstName,
+                        "lastName" to lastName,
+                        "email" to email,
+                        "subscribed" to false, // default until they pick a plan
+                        "currency" to "ZAR"   // default currency
+                    )
+
+                    FirebaseDatabase.getInstance().getReference("users")
+                        .child(uid)
+                        .setValue(userMap)
+                        .addOnSuccessListener {
+                            Toast.makeText(requireContext(), "User registered successfully", Toast.LENGTH_SHORT).show()
+                            clearFields()
+
+                            //Store in UserSession
+                            UserSession.uid = uid
+                            UserSession.email = email
+
+                            //Navigate to Subscription fragment
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.fragment_container, Subscription())
+                                .commit()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(requireContext(), "Failed to save profile: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
                 } else {
                     Toast.makeText(requireContext(), "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }

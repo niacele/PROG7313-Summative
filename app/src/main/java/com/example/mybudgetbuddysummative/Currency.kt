@@ -56,9 +56,11 @@ class Currency : Fragment() {
             dbRef.child(userId).child("currency").setValue(selectedCurrency)
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Currency updated to $selectedCurrency", Toast.LENGTH_SHORT).show()
+                    // Optionally update UserSession so adapters reflect immediately
+                    UserSession.currency = selectedCurrency
                 }
-                .addOnFailureListener {
-                    Toast.makeText(requireContext(), "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+                .addOnFailureListener { e ->
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
     }

@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  The currency interface utilizes the same stacked form styling to allow premium users
-  to toggle their app-wide transaction symbol.
--->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,10 +8,7 @@
     android:background="@android:color/white"
     tools:context=".Currency">
 
-    <include
-        android:id="@+id/navigationLayout"
-        layout="@layout/activity_main" />
-
+    <!-- Back button -->
     <ImageButton
         android:id="@+id/btnBackButton"
         android:layout_width="48dp"
@@ -29,6 +23,7 @@
         app:srcCompat="@drawable/back_icon_removebg_preview"
         tools:ignore="SpeakableTextPresentCheck" />
 
+    <!-- Currency card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardContainer"
         android:layout_width="match_parent"

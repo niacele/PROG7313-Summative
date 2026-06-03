@@ -31,6 +31,8 @@ class Home : Fragment() {
     private val dbRef = FirebaseDatabase.getInstance().getReference("expenses")
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
+    private var filterType: String = "day"
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,51 +54,46 @@ class Home : Fragment() {
                 .setTitle("Select Range")
                 .setItems(options) { _, which ->
                     val selected = options[which].lowercase()
+                    filterType = selected
                     showExpensesForRange(selected)
                 }
                 .show()
         }
 
         btnGenerateReport.setOnClickListener {
-            // Navigate to ReportFragment
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, Report())
                 .addToBackStack(null)
                 .commit()
         }
 
-
-
         return view
     }
-    // Map envelope/category names to color resources
-    private val envelopeColour: Map<String, Int> = mapOf(
-        "Groceries" to Color.parseColor("#C57B7B"),
-        "Transport" to Color.parseColor("#404040"),
-        "Entertainment" to Color.parseColor("#FFAAAA"),
-        "Bills" to Color.parseColor("#93A9A7"),
-        "Other" to Color.parseColor("white")
-    )
 
     private fun showExpensesForRange(range: String) {
         val calendar = Calendar.getInstance()
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // ✅ match Expense fragment
         val today = sdf.format(calendar.time)
 
         txtDashboardDate.text = today
         txtDashboardTodayLabel.text = SimpleDateFormat("EEEE", Locale.getDefault()).format(calendar.time)
 
         if (userId == null) return
+
+        // ✅ Loop through all envelopes under this user
         dbRef.child(userId).get().addOnSuccessListener { snapshot ->
             val categoryTotals = mutableMapOf<String, Double>()
 
-            for (expenseSnap in snapshot.children) {
-                val category = expenseSnap.child("category").getValue(String::class.java) ?: "Other"
-                val amount = expenseSnap.child("amount").getValue(Double::class.java) ?: 0.0
-                val date = expenseSnap.child("date").getValue(String::class.java) ?: ""
+            for (envelopeSnap in snapshot.children) {
+                for (expenseSnap in envelopeSnap.children) {
+                    val category = expenseSnap.child("category").getValue(String::class.java) ?: "Other"
+                    val amount = expenseSnap.child("amount").getValue(Double::class.java) ?: 0.0
+                    val date = expenseSnap.child("date").getValue(String::class.java) ?: ""
 
-                if (isInRange(date, range, calendar)) {
-                    categoryTotals[category] = (categoryTotals[category] ?: 0.0) + amount
+                    val expenseDate = sdf.parse(date) ?: continue
+                    if (isInRange(expenseDate, range, calendar)) {
+                        categoryTotals[category] = (categoryTotals[category] ?: 0.0) + amount
+                    }
                 }
             }
 
@@ -104,28 +101,16 @@ class Home : Fragment() {
         }
     }
 
-    private fun isInRange(date: String, range: String, calendar: Calendar): Boolean {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val expenseDate = sdf.parse(date) ?: return false
-
+    private fun isInRange(expenseDate: java.util.Date, range: String, calendar: Calendar): Boolean {
+        val expCal = Calendar.getInstance().apply { time = expenseDate }
         return when (range) {
-            "day" -> sdf.format(expenseDate) == sdf.format(calendar.time)
-            "week" -> {
-                val weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR)
-                val expCal = Calendar.getInstance().apply { time = expenseDate }
-                expCal.get(Calendar.WEEK_OF_YEAR) == weekOfYear
-            }
-            "month" -> {
-                val month = calendar.get(Calendar.MONTH)
-                val year = calendar.get(Calendar.YEAR)
-                val expCal = Calendar.getInstance().apply { time = expenseDate }
-                expCal.get(Calendar.MONTH) == month && expCal.get(Calendar.YEAR) == year
-            }
-            "year" -> {
-                val year = calendar.get(Calendar.YEAR)
-                val expCal = Calendar.getInstance().apply { time = expenseDate }
-                expCal.get(Calendar.YEAR) == year
-            }
+            "day" -> expCal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR) &&
+                    expCal.get(Calendar.DAY_OF_YEAR) == calendar.get(Calendar.DAY_OF_YEAR)
+            "week" -> expCal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR) &&
+                    expCal.get(Calendar.WEEK_OF_YEAR) == calendar.get(Calendar.WEEK_OF_YEAR)
+            "month" -> expCal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR) &&
+                    expCal.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)
+            "year" -> expCal.get(Calendar.YEAR) == calendar.get(Calendar.YEAR)
             else -> false
         }
     }
@@ -138,7 +123,7 @@ class Home : Fragment() {
         val colors = mutableListOf<Int>()
         for (entry in entries) {
             val envelope = entry.label
-            val colorInt = envelopeColour[envelope] ?: Color.parseColor("#FFFFFF") // fallback white
+            val colorInt = envelopeColour[envelope] ?: Color.parseColor("#FFFFFF")
             colors.add(colorInt)
         }
 
@@ -150,4 +135,12 @@ class Home : Fragment() {
         mainBudgetPieChart.data = data
         mainBudgetPieChart.invalidate()
     }
+
+    private val envelopeColour: Map<String, Int> = mapOf(
+        "Groceries" to Color.parseColor("#C57B7B"),
+        "Transport" to Color.parseColor("#404040"),
+        "Entertainment" to Color.parseColor("#FFAAAA"),
+        "Bills" to Color.parseColor("#93A9A7"),
+        "Other" to Color.parseColor("#FFFFFF")
+    )
 }

@@ -17,7 +17,7 @@ class AllocationAdapter(private val items: List<AllocationItem>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_expense_row, parent, false)
+            .inflate(R.layout.item_expense_row, parent, false) // ✅ matches your XML
         return ViewHolder(view)
     }
 

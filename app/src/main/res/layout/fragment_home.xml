@@ -6,9 +6,6 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <include
-        android:id="@+id/navigationLayout"
-        layout="@layout/activity_main" />
 
     <ImageButton
         android:id="@+id/btnDashboardSettings"

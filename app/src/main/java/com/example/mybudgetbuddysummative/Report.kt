@@ -24,7 +24,10 @@ class Report : Fragment() {
 
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
-    private val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // ✅ match Expense fragment
+
+    // Map envelope names to IDs
+    private val envelopeMap = mutableMapOf<String, String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,20 +43,14 @@ class Report : Fragment() {
         txtTotal = view.findViewById(R.id.txtTotal)
         btnBackButton = view.findViewById(R.id.btnBackButton)
 
-        // Load envelopes into dropdown
         loadEnvelopes()
 
-        // Date pickers
         edtStartDate.setOnClickListener { showDatePicker(edtStartDate) }
         edtEndDate.setOnClickListener { showDatePicker(edtEndDate) }
 
-        // View report
         btnViewReport.setOnClickListener { viewReport() }
 
-        // Back button
-        btnBackButton.setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
+        btnBackButton.setOnClickListener { parentFragmentManager.popBackStack() }
 
         return view
     }
@@ -66,7 +63,11 @@ class Report : Fragment() {
             val envelopeNames = mutableListOf<String>()
             for (envSnap in snapshot.children) {
                 val name = envSnap.child("name").getValue(String::class.java)
-                if (name != null) envelopeNames.add(name)
+                val id = envSnap.key
+                if (name != null && id != null) {
+                    envelopeNames.add(name)
+                    envelopeMap[name] = id
+                }
             }
 
             val adapter = ArrayAdapter(requireContext(),
@@ -79,7 +80,9 @@ class Report : Fragment() {
         val cal = Calendar.getInstance()
         DatePickerDialog(requireContext(),
             { _, year, month, day ->
-                target.setText("$year-${month + 1}-$day")
+                val formattedMonth = String.format("%02d", month + 1)
+                val formattedDay = String.format("%02d", day)
+                target.setText("$formattedDay/$formattedMonth/$year") // ✅ dd/MM/yyyy
             },
             cal.get(Calendar.YEAR),
             cal.get(Calendar.MONTH),
@@ -89,7 +92,8 @@ class Report : Fragment() {
 
     private fun viewReport() {
         val userId = auth.currentUser?.uid ?: return
-        val envelopeFilter = edtFilterEnvelopeDropdown.text.toString().trim()
+        val envelopeFilterName = edtFilterEnvelopeDropdown.text.toString().trim()
+        val envelopeFilterId = envelopeMap[envelopeFilterName] // ✅ get ID from map
         val startDateStr = edtStartDate.text.toString().trim()
         val endDateStr = edtEndDate.text.toString().trim()
 
@@ -107,8 +111,8 @@ class Report : Fragment() {
             var total = 0.0
 
             for (envSnap in snapshot.children) {
-                val envelopeName = envSnap.key ?: continue
-                if (envelopeFilter.isNotEmpty() && envelopeFilter != envelopeName) continue
+                val envId = envSnap.key ?: continue
+                if (envelopeFilterId != null && envelopeFilterId != envId) continue
 
                 for (expenseSnap in envSnap.children) {
                     val dateStr = expenseSnap.child("date").getValue(String::class.java) ?: continue
@@ -116,18 +120,17 @@ class Report : Fragment() {
                     val desc = expenseSnap.child("description").getValue(String::class.java) ?: ""
 
                     val expDate = sdf.parse(dateStr) ?: continue
-                    if (expDate.after(startDate) && expDate.before(endDate)) {
+                    if (!expDate.before(startDate) && !expDate.after(endDate)) { // ✅ inclusive range
                         total += amount
 
-                        // Add row to resultsContainer
                         val row = TextView(requireContext())
-                        row.text = "$dateStr - $envelopeName: $desc (R%.2f)".format(amount)
+                        row.text = "$dateStr - ${envelopeFilterName.ifEmpty { "Envelope" }}: $desc (${CurrencyHelper.formatAmount(amount, UserSession.currency)})"
                         resultsContainer.addView(row)
                     }
                 }
             }
 
-            txtTotal.text = "R%.2f".format(total)
+            txtTotal.text = CurrencyHelper.formatAmount(total, UserSession.currency)
         }
     }
 }

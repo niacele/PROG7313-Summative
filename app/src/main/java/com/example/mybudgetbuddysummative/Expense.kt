@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import java.util.*
 
@@ -23,18 +24,17 @@ class Expense : Fragment() {
 
     private var selectedPhotoUri: String? = null
 
-    private lateinit var btnAccountButton: ImageButton
-    private lateinit var btnAddExpense: ImageButton
-    private lateinit var btnEnvelope: ImageButton
-
+    private val auth = FirebaseAuth.getInstance()
     private val dbRef = FirebaseDatabase.getInstance().getReference("expenses")
+
+    private var envelopeId: String? = null
+    private var envelopeName: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_expense, container, false)
 
-        // Bind views
         edtCategory = view.findViewById(R.id.edtCategory)
         edtAmount = view.findViewById(R.id.edtAmount)
         edtDescription = view.findViewById(R.id.edtDescription)
@@ -43,19 +43,17 @@ class Expense : Fragment() {
         btnSave = view.findViewById(R.id.btnSave)
         btnBack = view.findViewById(R.id.btnBackButton)
 
-        // Button listeners
+        // Get envelopeId from arguments (passed when opening this fragment)
+        envelopeId = arguments?.getString("envelopeId")
+        envelopeName = arguments?.getString("envelopeName")
+
         btnAddImage.setOnClickListener {
             Toast.makeText(requireContext(), "Add a photo", Toast.LENGTH_SHORT).show()
             pickImageLauncher.launch("image/*")
         }
 
-        btnSave.setOnClickListener {
-            saveExpense()
-        }
-
-        edtDate.setOnClickListener {
-            showDatePicker()
-        }
+        btnSave.setOnClickListener { saveExpense() }
+        edtDate.setOnClickListener { showDatePicker() }
 
         btnBack.setOnClickListener {
             parentFragmentManager.beginTransaction()
@@ -83,10 +81,17 @@ class Expense : Fragment() {
             return
         }
 
-        // Create expense object
-        val expenseId = dbRef.push().key!!  // unique ID
+        val userId = auth.currentUser?.uid ?: return
+        val envId = envelopeId ?: run {
+            Toast.makeText(requireContext(), "No envelope selected", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val expenseId = dbRef.child(userId).child(envId).push().key!!  // ✅ unique ID under envelope
         val expense = mapOf(
             "id" to expenseId,
+            "userId" to userId,
+            "envelopeId" to envId,
             "category" to category,
             "amount" to amount,
             "date" to date,
@@ -94,14 +99,14 @@ class Expense : Fragment() {
             "photoUri" to selectedPhotoUri
         )
 
-        // Save to Firebase
-        dbRef.child(expenseId).setValue(expense)
+        // ✅ Save under expenses/{uid}/{envelopeId}/{expenseId}
+        dbRef.child(userId).child(envId).child(expenseId).setValue(expense)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Expense saved successfully", Toast.LENGTH_SHORT).show()
                 clearFields()
             }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to save expense: ${it.message}", Toast.LENGTH_LONG).show()
+            .addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "Failed to save expense: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 
@@ -116,7 +121,7 @@ class Expense : Fragment() {
             { _, selectedYear, selectedMonth, selectedDay ->
                 val formattedMonth = String.format("%02d", selectedMonth + 1)
                 val formattedDay = String.format("%02d", selectedDay)
-                val selectedDate = "$selectedYear-$formattedMonth-$formattedDay"
+                val selectedDate = "$selectedDay/$formattedMonth/$selectedYear" // ✅ match dd/MM/yyyy
                 edtDate.setText(selectedDate)
             },
             year, month, day

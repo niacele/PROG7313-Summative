@@ -43,13 +43,17 @@ class EnvelopeTotal : Fragment() {
         rvExpensesList.layoutManager = LinearLayoutManager(requireContext())
         rvAllocationsList.layoutManager = LinearLayoutManager(requireContext())
 
-        // Assume envelopeId passed via arguments
+        // envelopeId and name passed via arguments
         envelopeId = arguments?.getString("envelopeId")
         val envelopeName = arguments?.getString("envelopeName") ?: "Envelope"
         txtEnvelopeTitle.text = envelopeName
 
-        loadExpenses()
-        loadAllocations()
+        if (envelopeId == null) {
+            txtEnvelopeTitle.text = "No envelope selected"
+        } else {
+            loadExpenses()
+            loadAllocations()
+        }
 
         btnEnvelopeSettings.setOnClickListener {
             // Cycle filter type: day → week → month → year
@@ -67,11 +71,12 @@ class EnvelopeTotal : Fragment() {
 
     private fun loadExpenses() {
         val userId = auth.currentUser?.uid ?: return
-        val ref = db.getReference("expenses").child(userId).child(envelopeId ?: return)
+        val envId = envelopeId ?: return
+        val ref = db.getReference("expenses").child(userId).child(envId)
 
         ref.get().addOnSuccessListener { snapshot ->
             val expenses = mutableListOf<ExpenseItem>()
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // ✅ match Income.kt
             val now = Calendar.getInstance()
 
             for (expenseSnap in snapshot.children) {
@@ -88,13 +93,15 @@ class EnvelopeTotal : Fragment() {
             rvExpensesList.adapter = ExpenseAdapter(expenses)
         }
     }
+
     private fun loadAllocations() {
         val userId = auth.currentUser?.uid ?: return
-        val ref = db.getReference("allocations").child(userId).child(envelopeId ?: return)
+        val envId = envelopeId ?: return
+        val ref = db.getReference("allocations").child(userId).child(envId) // ✅ ensure allocations saved under envelopeId
 
         ref.get().addOnSuccessListener { snapshot ->
             val allocations = mutableListOf<AllocationItem>()
-            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // ✅ match Income.kt
             val now = Calendar.getInstance()
 
             for (allocSnap in snapshot.children) {

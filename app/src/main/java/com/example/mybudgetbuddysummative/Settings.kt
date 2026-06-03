@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
 
 class Settings : Fragment() {
 
@@ -25,7 +26,6 @@ class Settings : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
-        // Typecasting
         btnBackButton = view.findViewById(R.id.btnBackButton)
         btnAccountInfo = view.findViewById(R.id.btnAccountInfo)
         btnCurrency = view.findViewById(R.id.btnCurrency)
@@ -33,15 +33,11 @@ class Settings : Fragment() {
         btnLogout = view.findViewById(R.id.btnLogout)
         btnManageSubscription = view.findViewById(R.id.btnManageSubscription)
 
-        // Back button → return to Home
+        // Back → return to Home
         btnBackButton.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, Home())
-                .addToBackStack(null)
-                .commit()
+            parentFragmentManager.popBackStack() // ✅ cleaner back navigation
         }
 
-        // Account Info
         btnAccountInfo.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, AccountInfo())
@@ -49,7 +45,6 @@ class Settings : Fragment() {
                 .commit()
         }
 
-        // Currency
         btnCurrency.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, Currency())
@@ -57,7 +52,6 @@ class Settings : Fragment() {
                 .commit()
         }
 
-        // Achievements
         btnAchievements.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, Achievements())
@@ -65,7 +59,6 @@ class Settings : Fragment() {
                 .commit()
         }
 
-        // Manage Subscription
         btnManageSubscription.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, Subscription())
@@ -73,12 +66,21 @@ class Settings : Fragment() {
                 .commit()
         }
 
-        // Logout
         btnLogout.setOnClickListener {
-            Toast.makeText(requireContext(), "Logging out...", Toast.LENGTH_SHORT).show()
+            FirebaseAuth.getInstance().signOut()
+            UserSession.uid = null
+            UserSession.email = null
+            UserSession.currency = "ZAR" // reset to default
+
+            Toast.makeText(requireContext(), "Logged out", Toast.LENGTH_SHORT).show()
+
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, GetStarted())
                 .commit()
+
+            (activity as? MainActivity)?.apply {
+                bottomNav.visibility = View.GONE // ✅ hide nav bar after logout
+            }
         }
 
         return view
