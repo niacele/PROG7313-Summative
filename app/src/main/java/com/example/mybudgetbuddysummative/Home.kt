@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.replace
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -27,6 +28,7 @@ class Home : Fragment() {
     private lateinit var txtDashboardDate: TextView
     private lateinit var txtDashboardTodayLabel: TextView
     private lateinit var mainBudgetPieChart: PieChart
+    private lateinit var btnViewMore: Button
 
     private val dbRef = FirebaseDatabase.getInstance().getReference("expenses")
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -44,8 +46,8 @@ class Home : Fragment() {
         txtDashboardDate = view.findViewById(R.id.txtDashboardDate)
         txtDashboardTodayLabel = view.findViewById(R.id.txtDashboardTodayLabel)
         mainBudgetPieChart = view.findViewById(R.id.mainBudgetPieChart)
+        btnViewMore = view.findViewById(R.id.btnViewMore)
 
-        // Default: show today's expenses
         showExpensesForRange("day")
 
         btnDashboardSettings.setOnClickListener {
@@ -67,12 +69,19 @@ class Home : Fragment() {
                 .commit()
         }
 
+        btnViewMore.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, EnvelopeTotal())
+                .addToBackStack(null)
+                .commit()
+        }
+
         return view
     }
 
     private fun showExpensesForRange(range: String) {
         val calendar = Calendar.getInstance()
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // ✅ match Expense fragment
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val today = sdf.format(calendar.time)
 
         txtDashboardDate.text = today
@@ -80,7 +89,6 @@ class Home : Fragment() {
 
         if (userId == null) return
 
-        // ✅ Loop through all envelopes under this user
         dbRef.child(userId).get().addOnSuccessListener { snapshot ->
             val categoryTotals = mutableMapOf<String, Double>()
 

@@ -81,14 +81,15 @@ class Register : Fragment() {
                     val user = auth.currentUser
                     val uid = user?.uid ?: return@addOnCompleteListener
 
-                    //Save profile info in Realtime Database
                     val userMap = mapOf(
                         "uid" to uid,
                         "firstName" to firstName,
                         "lastName" to lastName,
                         "email" to email,
-                        "subscribed" to false, // default until they pick a plan
-                        "currency" to "ZAR"   // default currency
+                        "subscribed" to false,
+                        "currency" to "ZAR",
+                        "joinDate" to System.currentTimeMillis().toString(), // or format as date string
+                        "achievements" to 0
                     )
 
                     FirebaseDatabase.getInstance().getReference("users")

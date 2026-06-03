@@ -55,20 +55,22 @@ class AccountInfo : Fragment() {
         val userId = auth.currentUser?.uid ?: return
 
         dbRef.child(userId).get().addOnSuccessListener { snapshot ->
-            val firstName = snapshot.child("firstName").getValue(String::class.java) ?: ""
-            val lastName = snapshot.child("lastName").getValue(String::class.java) ?: ""
-            val email = snapshot.child("email").getValue(String::class.java) ?: "Email will appear here"
-            val joinDate = snapshot.child("joinDate").getValue(String::class.java) ?: "Date will appear here"
-            val achievements = snapshot.child("achievements").getValue(Int::class.java) ?: 0
-            val subscribed = snapshot.child("subscribed").getValue(Boolean::class.java) ?: false
+            if (snapshot.exists()) {
+                val firstName = snapshot.child("firstName").getValue(String::class.java) ?: ""
+                val lastName = snapshot.child("lastName").getValue(String::class.java) ?: ""
+                val email = snapshot.child("email").getValue(String::class.java) ?: "Email will appear here"
+                val joinDate = snapshot.child("joinDate").getValue(String::class.java) ?: "Date will appear here"
+                val achievements = snapshot.child("achievements").getValue(Int::class.java) ?: 0
+                val subscribed = snapshot.child("subscribed").getValue(Boolean::class.java) ?: false
 
-            val fullName = listOf(firstName, lastName).filter { it.isNotBlank() }.joinToString(" ")
-            txtUserName.text = if (fullName.isNotBlank()) fullName else "Name will appear here"
-
-            txtUserEmail.text = email
-            txtDate.text = joinDate
-            txtAchievements.text = achievements.toString()
-            txtSubscribed.text = if (subscribed) "Yes" else "No"
+                txtUserName.text = if (firstName.isNotBlank() || lastName.isNotBlank()) "$firstName $lastName" else "Name will appear here"
+                txtUserEmail.text = email
+                txtDate.text = joinDate
+                txtAchievements.text = achievements.toString()
+                txtSubscribed.text = if (subscribed) "Yes" else "No"
+            }
+        }.addOnFailureListener {
+            Toast.makeText(requireContext(), "Failed to load user details", Toast.LENGTH_SHORT).show()
         }
     }
 

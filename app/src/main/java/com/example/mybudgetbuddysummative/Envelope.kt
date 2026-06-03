@@ -70,8 +70,12 @@ class Envelope : Fragment() {
             }
         }
 
-        btnSave.setOnClickListener { saveEnvelope() }
-        btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
+        btnSave.setOnClickListener {
+            saveEnvelope()
+        }
+        btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
 
         return view
     }
@@ -81,13 +85,12 @@ class Envelope : Fragment() {
         val amountText = edtAmount.text.toString().trim()
         val amount = amountText.toDoubleOrNull()
 
-        if (name.isEmpty() || amount == null) {
-            Toast.makeText(requireContext(), "Please enter valid name and amount", Toast.LENGTH_SHORT).show()
+        if (name.isEmpty() || amount == null || amount <= 0) {
+            Toast.makeText(requireContext(), "Please enter a valid name and positive amount", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
+        val userId = auth.currentUser?.uid ?: run {
             Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
             return
         }
@@ -106,6 +109,8 @@ class Envelope : Fragment() {
         dbRef.child(userId).child(envelopeId).setValue(envelopeMap)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Envelope saved", Toast.LENGTH_SHORT).show()
+                edtEnvelopeName.text.clear()
+                edtAmount.text.clear()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
