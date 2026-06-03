@@ -1,6 +1,8 @@
 package com.example.mybudgetbuddysummative
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import coil.load
+import coil.transform.RoundedCornersTransformation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -27,8 +31,7 @@ class Report : Fragment() {
     private lateinit var btnBackButton: ImageButton
 
     private val auth = FirebaseAuth.getInstance()
-
-    // Core database path pointer layers
+    private val databaseUrl = "https://firebaseio.com"
     private lateinit var envelopesRef: com.google.firebase.database.DatabaseReference
     private lateinit var expensesRef: com.google.firebase.database.DatabaseReference
 
@@ -53,7 +56,6 @@ class Report : Fragment() {
         txtTotal = view.findViewById(R.id.txtTotal)
         btnBackButton = view.findViewById(R.id.btnBackButton)
 
-        // Initialize drop adapter with empty list framework row templates
         dropdownAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, envelopeNames)
         edtFilterEnvelopeDropdown.setAdapter(dropdownAdapter)
 
@@ -69,28 +71,22 @@ class Report : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // CORRECTED INITIALIZATION HOOK: Inherit the verified central path directly from MainActivity threads
         if (activity is MainActivity) {
             val mainAct = activity as MainActivity
             envelopesRef = mainAct.envelopesRef
             expensesRef = mainAct.envelopesRef.root.child("expenses")
-            Log.d("ReportDebug", "Successfully connected to MainActivity data threads.")
         } else {
-            // Backup direct instance pointer path definitions
-            val databaseUrl = "https://firebaseio.com"
             val databaseInstance = FirebaseDatabase.getInstance(databaseUrl)
             envelopesRef = databaseInstance.getReference("envelopes")
             expensesRef = databaseInstance.getReference("expenses")
         }
 
-        // Trigger safe network fetch streaming sequence
         loadEnvelopes()
     }
 
     private fun loadEnvelopes() {
         val userId = auth.currentUser?.uid ?: "test_development_user"
 
-        // CORRECTION: Uses the inherited reference configured at root to listen for updates live
         envelopesRef.child(userId).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 envelopeNames.clear()
@@ -105,12 +101,7 @@ class Report : Fragment() {
                             envelopeMap[name] = id
                         }
                     }
-                    Log.d("ReportDebug", "Populated ${envelopeNames.size} envelopes into layout memory arrays.")
-                } else {
-                    Log.w("ReportDebug", "No snapshot children items found under: envelopes/$userId")
                 }
-
-                // Notify list adapter elements to physically draw values to screen dropdown choices
                 dropdownAdapter.notifyDataSetChanged()
             }
 
@@ -162,6 +153,8 @@ class Report : Fragment() {
                     val amount = expenseSnap.child("amount").getValue(Double::class.java) ?: 0.0
                     val desc = expenseSnap.child("description").getValue(String::class.java) ?: ""
 
+                    val photoUriStr = expenseSnap.child("photoUri").getValue(String::class.java)
+
                     if (dateStr.isNotEmpty()) {
                         try {
                             val expDate = dbSdf.parse(dateStr)
@@ -169,16 +162,58 @@ class Report : Fragment() {
                             if (expDate != null && !expDate.before(startDate) && !expDate.after(endDate)) {
                                 total += amount
 
-                                val row = TextView(requireContext())
-                                row.setPadding(12, 16, 12, 16)
-                                row.textSize = 15f
-                                row.setTextColor(android.graphics.Color.BLACK)
+                                val rowContainer = LinearLayout(requireContext()).apply {
+                                    orientation = LinearLayout.HORIZONTAL
+                                    layoutParams = LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                    )
+                                    setPadding(12, 16, 12, 16)
+                                    gravity = android.view.Gravity.CENTER_VERTICAL
+                                }
 
-                                val formattedDisplayDate = uiSdf.format(expDate)
-                                val formattedMoney = CurrencyHelper.formatAmount(amount, UserSession.currency)
+                                val txtInfo = TextView(requireContext()).apply {
+                                    layoutParams = LinearLayout.LayoutParams(
+                                        0,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                        1f
+                                    )
+                                    textSize = 14f
+                                    setTextColor(Color.BLACK)
 
-                                row.text = "$formattedDisplayDate - $envelopeName: $desc ($formattedMoney)"
-                                resultsContainer.addView(row)
+                                    val formattedDisplayDate = uiSdf.format(expDate)
+                                    val formattedMoney = CurrencyHelper.formatAmount(amount, UserSession.currency)
+                                    text = "$formattedDisplayDate - $envelopeName: $desc ($formattedMoney)"
+                                }
+                                rowContainer.addView(txtInfo)
+
+                                if (!photoUriStr.isNullOrEmpty()) {
+                                    val imgReceiptPreview = ImageView(requireContext()).apply {
+                                        layoutParams = LinearLayout.LayoutParams(54.toPx(), 54.toPx()).apply {
+                                            setMargins(8, 0, 0, 0)
+                                        }
+                                        scaleType = ImageView.ScaleType.CENTER_CROP
+                                        contentDescription = "Receipt Attachment Preview"
+
+                                        load(photoUriStr) {
+                                            crossfade(true)
+                                            placeholder(android.R.drawable.progress_horizontal)
+                                            error(android.R.drawable.ic_menu_gallery)
+                                            transformations(RoundedCornersTransformation(12f))
+                                        }
+
+                                        setOnClickListener {
+                                            val viewDialog = ImageView(requireContext()).apply { load(photoUriStr) }
+                                            AlertDialog.Builder(requireContext())
+                                                .setView(viewDialog)
+                                                .setPositiveButton("Close", null)
+                                                .show()
+                                        }
+                                    }
+                                    rowContainer.addView(imgReceiptPreview)
+                                }
+
+                                resultsContainer.addView(rowContainer)
                             }
                         } catch (e: Exception) {
                             Log.e("ReportDebug", "Skipping parsing error: $dateStr", e)
@@ -196,4 +231,7 @@ class Report : Fragment() {
             Log.e("ReportDebug", "Firebase extraction cancelled: ${e.message}")
         }
     }
+
+    private fun Int.toPx(): Int = (this * resources.displayMetrics.density).toInt()
 }
+

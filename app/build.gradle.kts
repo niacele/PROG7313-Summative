@@ -56,6 +56,9 @@ dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.play.services.maps3d)
 
+    //imports for photo display
+    implementation("io.coil-kt:coil:2.6.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

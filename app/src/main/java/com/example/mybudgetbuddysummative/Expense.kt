@@ -1,6 +1,8 @@
 package com.example.mybudgetbuddysummative
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -52,7 +54,6 @@ class Expense : Fragment() {
         btnBackButton = view.findViewById(R.id.btnBackButton)
         btnAddIncome = view.findViewById(R.id.btnAddIncome)
 
-
         dropdownAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, envelopeNamesList)
         edtCategory.setAdapter(dropdownAdapter)
 
@@ -89,12 +90,9 @@ class Expense : Fragment() {
         if (activity is MainActivity) {
             val mainAct = activity as MainActivity
             envelopesRef = mainAct.envelopesRef
-
             expensesRef = mainAct.envelopesRef.root.child("expenses")
-            Log.d("ExpenseDebug", "Successfully inherited database references from MainActivity.")
         } else {
-            // Safe fallback initialization pattern using your custom URL configuration
-            val databaseUrl = "https://mybudgetbuddysum-default-rtdb.firebaseio.com/"
+            val databaseUrl = "https://firebaseio.com"
             val databaseInstance = FirebaseDatabase.getInstance(databaseUrl)
             envelopesRef = databaseInstance.getReference("envelopes")
             expensesRef = databaseInstance.getReference("expenses")
@@ -109,7 +107,6 @@ class Expense : Fragment() {
         envelopesRef.child(userId).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 envelopeNamesList.clear()
-
                 if (snapshot.exists()) {
                     for (envelopeSnapshot in snapshot.children) {
                         val envelopeName = envelopeSnapshot.child("name").getValue(String::class.java)
@@ -117,14 +114,9 @@ class Expense : Fragment() {
                             envelopeNamesList.add(envelopeName)
                         }
                     }
-                    Log.d("ExpenseDebug", "Successfully gathered ${envelopeNamesList.size} envelopes.")
-                } else {
-                    Log.w("ExpenseDebug", "No snapshot items discovered under database path: envelopes/$userId")
                 }
-
                 dropdownAdapter.notifyDataSetChanged()
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.e("ExpenseDebug", "Realtime data pipeline failed: ${error.message}")
             }
@@ -149,6 +141,35 @@ class Expense : Fragment() {
         }
 
         val userId = auth.currentUser?.uid ?: "test_development_user"
+        btnSave.isEnabled = false
+
+        val userRootRef = envelopesRef.root.child("users").child(userId)
+        userRootRef.child("subscribed").get().addOnSuccessListener { subSnapshot ->
+            val isSubscribed = subSnapshot.getValue(Boolean::class.java) ?: false
+
+            if (!isSubscribed && envelopeNamesList.size > 3) {
+                btnSave.isEnabled = true
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Premium Required")
+                    .setMessage("Free accounts are limited to a maximum of 3 custom budget categories. Upgrade to Premium to manage unlimited envelopes!")
+                    .setPositiveButton("Upgrade") { _, _ ->
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, SubscriptionTwo())
+                            .addToBackStack(null)
+                            .commit()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            } else {
+                executeExpenseSave(userId, chosenEnvelope, amount, date, description)
+            }
+        }.addOnFailureListener {
+            btnSave.isEnabled = true
+            executeExpenseSave(userId, chosenEnvelope, amount, date, description)
+        }
+    }
+
+    private fun executeExpenseSave(userId: String, chosenEnvelope: String, amount: Double, date: String, description: String) {
         val expenseId = expensesRef.child(userId).push().key!!
 
         val expenseMap = mapOf(
@@ -161,14 +182,13 @@ class Expense : Fragment() {
             "photoUri" to selectedPhotoUri
         )
 
-        btnSave.isEnabled = false
-
         expensesRef.child(userId).child(expenseId).setValue(expenseMap)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Expense saved successfully!", Toast.LENGTH_SHORT).show()
+                Achievements.awardAchievement("firstBudget")
+                Achievements.awardAchievement("expenseTracker")
                 clearFields()
                 btnSave.isEnabled = true
-
                 returnToHomeView()
             }
             .addOnFailureListener { e ->
@@ -200,8 +220,18 @@ class Expense : Fragment() {
         androidx.activity.result.contract.ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            selectedPhotoUri = uri.toString()
-            Toast.makeText(requireContext(), "Image receipt reference attached!", Toast.LENGTH_SHORT).show()
+            try {
+                // FIXED REMEDY: Force Android to grant permanent, persistent read access rights over this local file
+                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                requireContext().contentResolver.takePersistableUriPermission(uri, takeFlags)
+
+                selectedPhotoUri = uri.toString()
+                Toast.makeText(requireContext(), "Image receipt reference attached permanently!", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                // Slicing edge-case fallback if persistable tokens aren't available on a legacy test device
+                selectedPhotoUri = uri.toString()
+                Log.w("ExpenseDebug", "Persistable URI check skipped on this architecture: ${e.message}")
+            }
         }
     }
 
