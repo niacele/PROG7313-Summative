@@ -3,7 +3,6 @@ package com.example.mybudgetbuddysummative
 import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,9 +77,12 @@ class Envelope : Fragment() {
         for (i in 0 until colorPaletteContainer.childCount) {
             val child = colorPaletteContainer.getChildAt(i)
             if (child is CheckBox) {
-                // Now safely reads the newly added tag elements from XML
                 val hexColor = child.tag?.toString() ?: "#4A6984"
-                child.setBackgroundColor(Color.parseColor(hexColor))
+                val parsedColorInt = Color.parseColor(hexColor)
+
+                child.setBackgroundColor(parsedColorInt)
+                child.text = ""
+                child.buttonDrawable = null
 
                 if (hexColor == selectedColor) {
                     child.isChecked = true
@@ -91,7 +93,7 @@ class Envelope : Fragment() {
                     child.isChecked = false
                     child.scaleX = 0.9f
                     child.scaleY = 0.9f
-                    child.alpha = 0.5f // Fade unselected choices for better visual contrast
+                    child.alpha = 0.5f
                 }
 
                 child.setOnClickListener { view ->
@@ -99,12 +101,13 @@ class Envelope : Fragment() {
                     for (j in 0 until colorPaletteContainer.childCount) {
                         val other = colorPaletteContainer.getChildAt(j)
                         if (other is CheckBox) {
+                            val otherHex = other.tag?.toString() ?: "#4A6984"
                             if (other == clickedBox) {
                                 other.isChecked = true
                                 other.scaleX = 1.1f
                                 other.scaleY = 1.1f
                                 other.alpha = 1.0f
-                                selectedColor = other.tag?.toString() ?: "#4A6984"
+                                selectedColor = otherHex
                             } else {
                                 other.isChecked = false
                                 other.scaleX = 0.9f

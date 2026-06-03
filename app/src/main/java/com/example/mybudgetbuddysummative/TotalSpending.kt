@@ -8,13 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -29,7 +31,8 @@ class TotalSpending : Fragment() {
     private lateinit var txtSpendingSubheading: TextView
 
     private val auth = FirebaseAuth.getInstance()
-    private val databaseUrl = "https://firebaseio.com"
+
+    private val databaseUrl = "https://mybudgetbuddysum-default-rtdb.firebaseio.com/"
     private val db = FirebaseDatabase.getInstance(databaseUrl)
 
     private var filterType: String = "month"
@@ -71,16 +74,12 @@ class TotalSpending : Fragment() {
                 }
                 .show()
         }
-        //TEMPORARILY COMMENTED OUT!!!
-        //loadSpendingData()
 
         return view
     }
 
-    //ADDED THIS FUNCTION TEMPORARILY!!!
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         loadSpendingData()
     }
 
@@ -89,58 +88,72 @@ class TotalSpending : Fragment() {
         val envelopesRef = db.getReference("envelopes").child(userId)
         val expensesRef = db.getReference("expenses").child(userId)
 
-        envelopesRef.get().addOnSuccessListener { envelopeSnap ->
-            val spendingItems = mutableListOf<SpendingItem>()
+        // REAL-TIME CONVERTER REPAIR: Upgraded to active value stream listeners to refresh dashboard counters automatically
+        envelopesRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(envelopeSnap: DataSnapshot) {
 
-            expensesRef.get().addOnSuccessListener { expensesSnap ->
-                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val now = Calendar.getInstance()
+                expensesRef.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(expensesSnap: DataSnapshot) {
+                        val spendingItems = mutableListOf<SpendingItem>()
+                        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        val now = Calendar.getInstance()
 
-                for (env in envelopeSnap.children) {
-                    val envelopeId = env.key ?: continue
-                    val envelopeName = env.child("name").getValue(String::class.java) ?: continue
+                        for (env in envelopeSnap.children) {
+                            val envelopeId = env.key ?: continue
+                            val envelopeName = env.child("name").getValue(String::class.java) ?: continue
 
-                    // Reads default target amounts configuration values from your envelopes profile node securely
-                    val goalAmount = env.child("totalAmount").getValue(Double::class.java) ?: 0.0
+                            // Pulls direct target bounds from your custom envelopes creation node fields securely
+                            val goalAmount = env.child("totalAmount").getValue(Double::class.java) ?: 0.0
 
-                    var totalSpent = 0.0
-                    for (exp in expensesSnap.children) {
-                        val savedEnvelopeName = exp.child("envelope").getValue(String::class.java)
+                            var totalSpent = 0.0
+                            for (exp in expensesSnap.children) {
+                                val savedEnvelopeName = exp.child("envelope").getValue(String::class.java)
 
-                        if (savedEnvelopeName == envelopeName) {
-                            val dateStr = exp.child("date").getValue(String::class.java) ?: ""
-                            if (dateStr.isNotEmpty()) {
-                                try {
-                                    val expenseDate = sdf.parse(dateStr)
-                                    if (expenseDate != null && isInRange(expenseDate, filterType, now)) {
-                                        totalSpent += exp.child("amount").getValue(Double::class.java) ?: 0.0
+                                if (savedEnvelopeName == envelopeName) {
+                                    val dateStr = exp.child("date").getValue(String::class.java) ?: ""
+                                    if (dateStr.isNotEmpty()) {
+                                        try {
+                                            val expenseDate = sdf.parse(dateStr)
+                                            if (expenseDate != null && isInRange(expenseDate, filterType, now)) {
+                                                totalSpent += exp.child("amount").getValue(Double::class.java) ?: 0.0
+                                            }
+                                        } catch (e: Exception) {
+                                            Log.e("TotalSpending", "Skipping parsing error date string: $dateStr", e)
+                                        }
                                     }
-                                } catch (e: Exception) {
-                                    Log.e("TotalSpending", "Skipping parsing error date string: $dateStr", e)
                                 }
+                            }
+
+                            spendingItems.add(SpendingItem(envelopeId, envelopeName, totalSpent, goalAmount))
+                        }
+
+                        // Protects adapter binding sequence state limits from thread drops
+                        if (isAdded && activity != null) {
+                            rvTotalSpendingList.adapter = TotalSpendingAdapter(spendingItems) { selectedItem ->
+                                val fragment = EnvelopeTotal().apply {
+                                    arguments = Bundle().apply {
+                                        putString("envelopeId", selectedItem.envelopeId)
+                                        putString("envelopeName", selectedItem.envelopeName)
+                                    }
+                                }
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit()
                             }
                         }
                     }
 
-                    spendingItems.add(SpendingItem(envelopeId, envelopeName, totalSpent, goalAmount))
-                }
-
-                rvTotalSpendingList.adapter = TotalSpendingAdapter(spendingItems) { selectedItem ->
-                    val fragment = EnvelopeTotal().apply {
-                        arguments = Bundle().apply {
-                            putString("envelopeId", selectedItem.envelopeId)
-                            putString("envelopeName", selectedItem.envelopeName)
-                        }
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e("TotalSpending", "Expenses data pipeline canceled: ${error.message}")
                     }
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit()
-                }
+                })
             }
-        }.addOnFailureListener { e ->
-            Log.e("TotalSpending", "Firebase connection failed: ${e.message}")
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("TotalSpending", "Envelopes data pipeline canceled: ${error.message}")
+            }
+        })
     }
 
     private fun isInRange(expenseDate: Date, range: String, calendar: Calendar): Boolean {
