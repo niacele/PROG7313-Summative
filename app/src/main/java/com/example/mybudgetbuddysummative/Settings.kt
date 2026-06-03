@@ -33,9 +33,12 @@ class Settings : Fragment() {
         btnLogout = view.findViewById(R.id.btnLogout)
         btnManageSubscription = view.findViewById(R.id.btnManageSubscription)
 
-        // Back → return to Home
         btnBackButton.setOnClickListener {
-            parentFragmentManager.popBackStack() // ✅ cleaner back navigation
+            if (activity is MainActivity) {
+                (activity as MainActivity).bottomNav.selectedItemId = R.id.nav_home
+            } else {
+                parentFragmentManager.popBackStack()
+            }
         }
 
         btnAccountInfo.setOnClickListener {
@@ -70,7 +73,7 @@ class Settings : Fragment() {
             FirebaseAuth.getInstance().signOut()
             UserSession.uid = null
             UserSession.email = null
-            UserSession.currency = "ZAR" // reset to default
+            UserSession.currency = "ZAR"
 
             Toast.makeText(requireContext(), "Logged out", Toast.LENGTH_SHORT).show()
 
@@ -79,7 +82,7 @@ class Settings : Fragment() {
                 .commit()
 
             (activity as? MainActivity)?.apply {
-                bottomNav.visibility = View.GONE // ✅ hide nav bar after logout
+                bottomNav.visibility = View.GONE
             }
         }
 

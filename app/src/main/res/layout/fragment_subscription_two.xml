@@ -234,7 +234,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- CONTINUE BUTTON -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnContinueUpgrade"
                 android:layout_width="240dp"

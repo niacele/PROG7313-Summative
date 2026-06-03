@@ -84,7 +84,6 @@ class MonthlyGoal : Fragment() {
             return
         }
 
-        // ✅ Find envelopeId by name
         val envelopesRef = db.getReference("envelopes").child(userId)
         envelopesRef.get().addOnSuccessListener { snapshot ->
             var envelopeId: String? = null
@@ -111,9 +110,9 @@ class MonthlyGoal : Fragment() {
                 "targetMonth" to targetMonth
             )
 
-            // ✅ Save under monthlyGoals/{uid}/{envelopeId}/{goalId}
             db.getReference("monthlyGoals").child(userId).child(envelopeId).child(goalId).setValue(goalMap)
                 .addOnSuccessListener {
+                    Achievements.awardAchievement("firstBudget")
                     Toast.makeText(requireContext(), "Monthly goal saved", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->

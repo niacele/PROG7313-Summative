@@ -6,7 +6,7 @@ object CurrencyHelper {
             "ZAR" -> "R${String.format("%.2f", amount)}"
             "USD" -> "$${String.format("%.2f", amount)}"
             "GBP" -> "£${String.format("%.2f", amount)}"
-            else -> "R${String.format("%.2f", amount)}" // default to ZAR
+            else -> "R${String.format("%.2f", amount)}"
         }
     }
 }

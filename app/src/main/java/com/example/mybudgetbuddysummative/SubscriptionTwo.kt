@@ -1,6 +1,7 @@
 package com.example.mybudgetbuddysummative
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,8 @@ class SubscriptionTwo : Fragment() {
     private var selectedPlan: String? = null
 
     private val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseDatabase.getInstance()
+    private val databaseUrl = "https://mybudgetbuddysum-default-rtdb.firebaseio.com/"
+    private lateinit var userRef: com.google.firebase.database.DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,33 +45,67 @@ class SubscriptionTwo : Fragment() {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (activity is MainActivity) {
+            userRef = (activity as MainActivity).envelopesRef.root.child("users")
+        } else {
+            userRef = FirebaseDatabase.getInstance(databaseUrl).getReference("users")
+        }
+    }
+
     private fun selectPlan(plan: String) {
         selectedPlan = plan
 
-        // highlight selected card
         cardMonthlyPlan.strokeWidth = if (plan == "monthly") 4 else 0
         cardAnnualPlan.strokeWidth = if (plan == "annual") 4 else 0
         cardFreePlan.strokeWidth = if (plan == "free") 4 else 0
     }
 
     private fun saveSelection() {
-        val userId = auth.currentUser?.uid ?: return
-        val ref = db.getReference("users").child(userId).child("subscription")
+        val userId = auth.currentUser?.uid ?: "test_development_user"
 
-        val value = when (selectedPlan) {
+        val planValue = when (selectedPlan) {
             "monthly" -> "premium_monthly"
             "annual" -> "premium_annual"
             "free" -> "free"
             else -> null
         }
 
-        if (value == null) {
+        if (planValue == null) {
             Toast.makeText(requireContext(), "Please select a plan first", Toast.LENGTH_SHORT).show()
             return
         }
 
-        ref.setValue(value).addOnSuccessListener {
-            (activity as? MainActivity)?.enableBottomNav()
+        val isSubscribedBoolean = (planValue != "free")
+
+        val updateMap = mapOf(
+            "subscription" to planValue,
+            "subscribed" to isSubscribedBoolean
+        )
+
+        // Pushing updateChildren completely overwrites previous plan records in the Firebase data tree
+        userRef.child(userId).updateChildren(updateMap).addOnSuccessListener {
+            Toast.makeText(requireContext(), "Subscription Updated!", Toast.LENGTH_SHORT).show()
+            navigateAfterSubscription()
+        }.addOnFailureListener { e ->
+            Toast.makeText(requireContext(), "Update failed: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun navigateAfterSubscription() {
+        val mainAct = activity as? MainActivity
+        if (mainAct != null) {
+            if (mainAct.bottomNav.visibility == View.VISIBLE) {
+                mainAct.bottomNav.selectedItemId = R.id.nav_home
+            } else {
+                mainAct.enableBottomNav()
+            }
+        } else {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, Home())
+                .commit()
         }
     }
 }

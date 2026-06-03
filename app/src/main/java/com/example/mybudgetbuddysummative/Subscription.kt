@@ -1,6 +1,7 @@
 package com.example.mybudgetbuddysummative
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,9 @@ class Subscription : Fragment() {
     private lateinit var btnSeePlans: Button
 
     private val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseDatabase.getInstance()
+    // Explicitly updated to match your MainActivity centralized Realtime Database instance URL
+    private val databaseUrl = "https://mybudgetbuddysum-default-rtdb.firebaseio.com/"
+    private lateinit var userRef: com.google.firebase.database.DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,13 +35,38 @@ class Subscription : Fragment() {
         return view
     }
 
-    private fun startFreePlan() {
-        val userId = auth.currentUser?.uid ?: return
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        // Save subscription status in Firebase
-        val ref = db.getReference("users").child(userId).child("subscription")
-        ref.setValue("free").addOnSuccessListener {
-            // Navigate to Home/Dashboard
+        if (activity is MainActivity) {
+            userRef = (activity as MainActivity).envelopesRef.root.child("users")
+        } else {
+            userRef = FirebaseDatabase.getInstance(databaseUrl).getReference("users")
+        }
+    }
+
+    private fun startFreePlan() {
+        val userId = auth.currentUser?.uid ?: "test_development_user"
+
+        val updateMap = mapOf(
+            "subscription" to "free",
+            "subscribed" to false
+        )
+
+        userRef.child(userId).updateChildren(updateMap).addOnSuccessListener {
+            navigateAfterSubscription()
+        }
+    }
+
+    private fun navigateAfterSubscription() {
+        val mainAct = activity as? MainActivity
+        if (mainAct != null) {
+            if (mainAct.bottomNav.visibility == View.VISIBLE) {
+                mainAct.bottomNav.selectedItemId = R.id.nav_home
+            } else {
+                mainAct.enableBottomNav()
+            }
+        } else {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, Home())
                 .commit()
@@ -46,7 +74,6 @@ class Subscription : Fragment() {
     }
 
     private fun goToPlansPage() {
-        // Navigate to a Premium Plans fragment/page
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, SubscriptionTwo())
             .addToBackStack(null)

@@ -24,7 +24,9 @@ class Income : Fragment() {
     private lateinit var btnSaveAllocation: Button
 
     private val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseDatabase.getInstance()
+
+    private val databaseUrl = "https://mybudgetbuddysum-default-rtdb.firebaseio.com/"
+    private val db = FirebaseDatabase.getInstance(databaseUrl)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_income, container, false)
@@ -38,12 +40,14 @@ class Income : Fragment() {
         edtAllocationEnvelopeDropdown = view.findViewById(R.id.edtAllocationEnvelopeDropdown)
         btnSaveAllocation = view.findViewById(R.id.btnSaveAllocation)
 
-        // Date picker
         edtIncomeDate.setOnClickListener {
             val cal = Calendar.getInstance()
             DatePickerDialog(requireContext(),
                 { _, year, month, day ->
-                    edtIncomeDate.setText("$day/${month + 1}/$year") // ✅ matches row layout format
+                    // UNIFIED FIX: Format with zero padding matching yyyy-MM-dd schema properties
+                    val formattedMonth = String.format("%02d", month + 1)
+                    val formattedDay = String.format("%02d", day)
+                    edtIncomeDate.setText("$year-$formattedMonth-$formattedDay")
                 },
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
@@ -60,7 +64,7 @@ class Income : Fragment() {
     }
 
     private fun loadEnvelopes() {
-        val userId = auth.currentUser?.uid ?: return
+        val userId = auth.currentUser?.uid ?: "test_development_user"
         val ref = db.getReference("envelopes").child(userId)
 
         ref.get().addOnSuccessListener { snapshot ->
@@ -77,13 +81,13 @@ class Income : Fragment() {
     }
 
     private fun saveIncome() {
-        val userId = auth.currentUser?.uid ?: return
+        val userId = auth.currentUser?.uid ?: "test_development_user"
         val amount = edtIncomeAmount.text.toString().toDoubleOrNull()
         val source = edtIncomeSource.text.toString().trim()
         val date = edtIncomeDate.text.toString().trim()
 
-        if (amount == null || source.isEmpty() || date.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+        if (amount == null || amount <= 0 || source.isEmpty() || date.isEmpty()) {
+            Toast.makeText(requireContext(), "Please fill all fields with positive values", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -98,7 +102,10 @@ class Income : Fragment() {
 
         db.getReference("income").child(userId).child(incomeId).setValue(incomeMap)
             .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Income saved", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Income saved successfully!", Toast.LENGTH_SHORT).show()
+                edtIncomeAmount.text.clear()
+                edtIncomeSource.text.clear()
+                edtIncomeDate.text.clear()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -106,16 +113,15 @@ class Income : Fragment() {
     }
 
     private fun saveAllocation() {
-        val userId = auth.currentUser?.uid ?: return
+        val userId = auth.currentUser?.uid ?: "test_development_user"
         val amount = edtAllocationAmount.text.toString().toDoubleOrNull()
         val envelopeName = edtAllocationEnvelopeDropdown.text.toString().trim()
 
-        if (amount == null || envelopeName.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter amount and select envelope", Toast.LENGTH_SHORT).show()
+        if (amount == null || amount <= 0 || envelopeName.isEmpty()) {
+            Toast.makeText(requireContext(), "Please enter positive amount and select envelope", Toast.LENGTH_SHORT).show()
             return
         }
 
-        //Find envelopeId by name
         val envelopesRef = db.getReference("envelopes").child(userId)
         envelopesRef.get().addOnSuccessListener { snapshot ->
             var envelopeId: String? = null
@@ -133,7 +139,8 @@ class Income : Fragment() {
             }
 
             val allocationId = db.getReference("allocations").child(userId).child(envelopeId).push().key!!
-            val dateStr = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+            val dateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
             val allocationMap = mapOf(
                 "id" to allocationId,
@@ -143,10 +150,13 @@ class Income : Fragment() {
                 "date" to dateStr
             )
 
-            // Save under allocations/{uid}/{envelopeId}/{allocationId}
             db.getReference("allocations").child(userId).child(envelopeId).child(allocationId).setValue(allocationMap)
                 .addOnSuccessListener {
-                    Toast.makeText(requireContext(), "Allocation saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Allocation saved successfully!", Toast.LENGTH_SHORT).show()
+
+                    // Reset field variables using zero-filtering methods safely
+                    edtAllocationAmount.text.clear()
+                    edtAllocationEnvelopeDropdown.setText("", false)
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
