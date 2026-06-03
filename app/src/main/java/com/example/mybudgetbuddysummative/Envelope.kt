@@ -15,7 +15,6 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-
 class Envelope : Fragment() {
     private lateinit var edtEnvelopeName: EditText
     private lateinit var edtAmount: EditText
@@ -24,12 +23,11 @@ class Envelope : Fragment() {
     private lateinit var btnBack: ImageButton
     private lateinit var colorPaletteContainer: LinearLayout
 
-
-    private val dbRef = FirebaseDatabase.getInstance().getReference("envelopes")
-    private val userId = FirebaseAuth.getInstance().currentUser?.uid
-
     private var selectedColor: String = "#4A6984"
     private var isRecurring: Boolean = false
+
+    private val auth = FirebaseAuth.getInstance()
+    private val dbRef = FirebaseDatabase.getInstance().getReference("envelopes")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,47 +35,46 @@ class Envelope : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_envelope, container, false)
 
-        //typecasting
         edtEnvelopeName = view.findViewById(R.id.edtEnvelopeName)
         edtAmount = view.findViewById(R.id.edtAmount)
         rgRecurring = view.findViewById(R.id.rgRecurring)
         btnSave = view.findViewById(R.id.btnSave)
+        btnBack = view.findViewById(R.id.btnBack)
         colorPaletteContainer = view.findViewById(R.id.colorPaletteContainer)
 
-        // reoccuring
+        // recurring flag
         rgRecurring.setOnCheckedChangeListener { _, checkedId ->
             isRecurring = checkedId == R.id.rbYes
         }
 
-        //colours
+        // color palette selection
         for (i in 0 until colorPaletteContainer.childCount) {
             val child = colorPaletteContainer.getChildAt(i)
             if (child is CheckBox) {
                 child.setOnCheckedChangeListener { buttonView, isChecked ->
                     if (isChecked) {
-                        // Uncheck others
+                        // uncheck others
                         for (j in 0 until colorPaletteContainer.childCount) {
                             val other = colorPaletteContainer.getChildAt(j)
                             if (other is CheckBox && other != buttonView) {
                                 other.isChecked = false
                             }
                         }
-                        // Save selected color
+                        // save selected color
                         val bg = child.background
-                        if (bg != null) {
-                            // fallback: use hardcoded hex from XML
-                            selectedColor = (child.background as? android.graphics.drawable.ColorDrawable)?.color?.let {
-                                String.format("#%06X", 0xFFFFFF and it)
-                            } ?: "#4A6984"
-                        }
+                        selectedColor = (bg as? android.graphics.drawable.ColorDrawable)?.color?.let {
+                            String.format("#%06X", 0xFFFFFF and it)
+                        } ?: "#4A6984"
                     }
                 }
             }
         }
 
-        // Save button
         btnSave.setOnClickListener {
             saveEnvelope()
+        }
+        btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
         }
 
         return view
@@ -88,21 +85,18 @@ class Envelope : Fragment() {
         val amountText = edtAmount.text.toString().trim()
         val amount = amountText.toDoubleOrNull()
 
-        if (name.isEmpty() || amount == null) {
-            Toast.makeText(requireContext(), "Please enter valid name and amount", Toast.LENGTH_SHORT).show()
+        if (name.isEmpty() || amount == null || amount <= 0) {
+            Toast.makeText(requireContext(), "Please enter a valid name and positive amount", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
+        val userId = auth.currentUser?.uid ?: run {
             Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val dbRef = FirebaseDatabase.getInstance().getReference("envelopes")
-        val envelopeId = dbRef.push().key!!
+        val envelopeId = dbRef.child(userId).push().key ?: return
 
-        //envelope
         val envelopeMap = mapOf(
             "id" to envelopeId,
             "userId" to userId,
@@ -115,9 +109,11 @@ class Envelope : Fragment() {
         dbRef.child(userId).child(envelopeId).setValue(envelopeMap)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "Envelope saved", Toast.LENGTH_SHORT).show()
+                edtEnvelopeName.text.clear()
+                edtAmount.text.clear()
             }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }

@@ -16,12 +16,12 @@
 
     <TextView
         android:id="@+id/rowSource"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Source / Description"
         android:textColor="#93A9A7"
-        app:layout_constraintEnd_toStartOf="@+id/rowAmount"
-        app:layout_constraintStart_toEndOf="@+id/rowDate"
+        app:layout_constraintStart_toEndOf="@id/rowDate"
+        app:layout_constraintEnd_toStartOf="@id/rowAmount"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView

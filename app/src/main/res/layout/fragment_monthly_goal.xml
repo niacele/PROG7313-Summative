@@ -7,10 +7,6 @@
     android:background="@android:color/white"
     tools:context=".MonthlyGoal">
 
-    <include
-        android:id="@+id/navigationLayout"
-        layout="@layout/activity_main" />
-
     <ImageButton
         android:id="@+id/btnBackButton"
         android:layout_width="48dp"

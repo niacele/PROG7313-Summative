@@ -7,11 +7,13 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var bottomNav: BottomNavigationView
+    lateinit var bottomNav: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        supportActionBar?.hide() // prevent double bar
 
         bottomNav = findViewById(R.id.bottom_navigation)
         bottomNav.itemIconTintList = null
@@ -20,7 +22,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, GetStarted())
                 .commit()
-            bottomNav.visibility = View.GONE // hide nav bar initially
+            bottomNav.visibility = View.GONE
         }
 
         bottomNav.setOnItemSelectedListener { item ->
@@ -36,13 +38,15 @@ class MainActivity : AppCompatActivity() {
 
     fun enableBottomNav() {
         bottomNav.visibility = View.VISIBLE
-        showFragment(Home())
+        bottomNav.selectedItemId = R.id.nav_home
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, Home())
+            .commit()
     }
 
     private fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
+            .commit() // no back stack for nav bar clicks
     }
 }

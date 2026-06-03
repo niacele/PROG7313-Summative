@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    tools:context=".Envelope">
 
-    <include
-        android:id="@+id/navigation"
-        layout="@layout/activity_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
+    <!-- Back button -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="34dp"
@@ -28,6 +25,7 @@
         app:srcCompat="@drawable/back_icon_removebg_preview"
         tools:ignore="TouchTargetSizeCheck,RedundantDescriptionCheck,SpeakableTextPresentCheck" />
 
+    <!-- Card container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardContainer"
         android:layout_width="0dp"
@@ -43,6 +41,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Title -->
         <TextView
             android:id="@+id/txtNewEnvelope"
             android:layout_width="wrap_content"
@@ -56,6 +55,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Envelope name -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEnvelopeName"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -81,6 +81,7 @@
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Amount -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilAmount"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -107,8 +108,7 @@
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-
+        <!-- Recurring -->
         <TextView
             android:id="@+id/lblRecurring"
             android:layout_width="wrap_content"
@@ -146,6 +146,7 @@
                 android:textColor="@color/buddydarkblue" />
         </RadioGroup>
 
+        <!-- Envelope color -->
         <TextView
             android:id="@+id/lblEnvelopeColor"
             android:layout_width="wrap_content"
@@ -167,12 +168,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lblEnvelopeColor">
 
-            <CheckBox
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
-                android:background="#4A6984"
-                tools:ignore="DuplicateSpeakableTextCheck" />
+            <CheckBox android:layout_width="48dp" android:layout_height="48dp" android:layout_marginEnd="8dp" android:background="#4A6984"/>
             <CheckBox android:layout_width="48dp" android:layout_height="48dp" android:layout_marginEnd="8dp" android:background="#C57B7B"/>
             <CheckBox android:layout_width="48dp" android:layout_height="48dp" android:layout_marginEnd="8dp" android:background="#404040"/>
             <CheckBox android:layout_width="48dp" android:layout_height="48dp" android:layout_marginEnd="8dp" android:background="#FFAAAA"/>
@@ -180,6 +176,7 @@
             <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/paintbrush_icon" tools:ignore="ContentDescription" />
         </LinearLayout>
 
+        <!-- Save button -->
         <Button
             android:id="@+id/btnSave"
             android:layout_width="180dp"

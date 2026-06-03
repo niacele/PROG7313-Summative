@@ -11,7 +11,6 @@ import android.widget.ImageView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-
 class Achievements : Fragment() {
     private lateinit var imgFirstBudget: ImageView
     private lateinit var imgFirstCategory: ImageView
@@ -21,7 +20,8 @@ class Achievements : Fragment() {
     private lateinit var imgExpenseTracker: ImageView
 
     private val auth = FirebaseAuth.getInstance()
-    private val dbRef = FirebaseDatabase.getInstance().getReference("achievements")
+    // ✅ Consistent path with AccountInfo
+    private val dbRef = FirebaseDatabase.getInstance().getReference("users")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,35 +43,32 @@ class Achievements : Fragment() {
 
     private fun loadAchievements() {
         val userId = auth.currentUser?.uid ?: return
-        dbRef.child(userId).get().addOnSuccessListener { snapshot ->
-            val achievements = snapshot.value as? Map<String, Boolean> ?: return@addOnSuccessListener
+        dbRef.child(userId).child("achievements").get().addOnSuccessListener { snapshot ->
+            if (!snapshot.exists()) return@addOnSuccessListener
 
             val pink = ContextCompat.getColor(requireContext(), R.color.buddypink)
             val tintList = ColorStateList.valueOf(pink)
 
-            if (achievements["firstBudget"] == true) {
-                imgFirstBudget.setImageTintList(tintList)
-            }
-            if (achievements["firstCategory"] == true) {
-                imgFirstCategory.setImageTintList(tintList)
-            }
-            if (achievements["budgeting101"] == true) {
-                imgBudgeting101.setImageTintList(tintList)
-            }
-            if (achievements["budgetBuddies"] == true) {
-                imgBudgetBuddies.setImageTintList(tintList)
-            }
-            if (achievements["savingStreak"] == true) {
-                imgSavingStreak.setImageTintList(tintList)
-            }
-            if (achievements["expenseTracker"] == true) {
-                imgExpenseTracker.setImageTintList(tintList)
+            snapshot.children.forEach { child ->
+                val key = child.key
+                val unlocked = child.getValue(Boolean::class.java) ?: false
+
+                if (unlocked) {
+                    when (key) {
+                        "firstBudget" -> imgFirstBudget.setImageTintList(tintList)
+                        "firstCategory" -> imgFirstCategory.setImageTintList(tintList)
+                        "budgeting101" -> imgBudgeting101.setImageTintList(tintList)
+                        "budgetBuddies" -> imgBudgetBuddies.setImageTintList(tintList)
+                        "savingStreak" -> imgSavingStreak.setImageTintList(tintList)
+                        "expenseTracker" -> imgExpenseTracker.setImageTintList(tintList)
+                    }
+                }
             }
         }
     }
 
     fun unlockAchievement(key: String) {
         val userId = auth.currentUser?.uid ?: return
-        dbRef.child(userId).child(key).setValue(true)
+        dbRef.child(userId).child("achievements").child(key).setValue(true)
     }
 }

@@ -69,11 +69,7 @@ class SubscriptionTwo : Fragment() {
         }
 
         ref.setValue(value).addOnSuccessListener {
-            // Navigate to Home after saving
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, Home())
-                .commit()
+            (activity as? MainActivity)?.enableBottomNav()
         }
     }
 }
-

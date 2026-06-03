@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.database.FirebaseDatabase
 import java.util.*
 
@@ -17,15 +18,10 @@ class Expense : Fragment() {
     private lateinit var edtAmount: EditText
     private lateinit var edtDescription: EditText
     private lateinit var edtDate: EditText
-    private lateinit var btnAddImage: ImageButton
+    private lateinit var btnAddImage: MaterialButton
     private lateinit var btnSave: Button
-    private lateinit var btnBack: ImageButton
 
     private var selectedPhotoUri: String? = null
-
-    private lateinit var btnAccountButton: ImageButton
-    private lateinit var btnAddExpense: ImageButton
-    private lateinit var btnEnvelope: ImageButton
 
     private val dbRef = FirebaseDatabase.getInstance().getReference("expenses")
 
@@ -41,7 +37,6 @@ class Expense : Fragment() {
         edtDate = view.findViewById(R.id.edtDate)
         btnAddImage = view.findViewById(R.id.btnAddImage)
         btnSave = view.findViewById(R.id.btnSave)
-        btnBack = view.findViewById(R.id.btnBackButton)
 
         // Button listeners
         btnAddImage.setOnClickListener {
@@ -57,11 +52,6 @@ class Expense : Fragment() {
             showDatePicker()
         }
 
-        btnBack.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, Home())
-                .commit()
-        }
 
         return view
     }

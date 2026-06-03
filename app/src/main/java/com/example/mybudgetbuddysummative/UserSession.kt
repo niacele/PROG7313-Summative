@@ -1,5 +1,7 @@
 package com.example.mybudgetbuddysummative
 
 object UserSession {
-    var currency: String = "ZAR" // default
+    var uid: String? = null
+    var email: String? = null
+    var currency: String = "ZAR" // default currency
 }
